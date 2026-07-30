@@ -219,6 +219,10 @@
   .qadd:hover { border-color: var(--accent); }
   .qadd.staged { border-style: dashed; }
   .p-quickrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .p-pendinghead {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    padding: 4px 8px 2px; font-size: 11.5px; font-weight: 600; color: var(--accent);
+  }
   .linklike {
     font-family: inherit; font-size: inherit; color: var(--accent);
     background: none; border: none; cursor: pointer; padding: 0;
@@ -801,8 +805,11 @@ function setMe(handle) {
 function updateIdentityUI() {
   const chip = document.getElementById("meChip");
   chip.style.display = "";
-  chip.textContent = me ? "you: @" + me : "sign in";
-  chip.title = me ? "tap to switch user" : "say who you are to add your connections";
+  const nPending = me ? pendingConfirms().length : 0;
+  chip.textContent = me ? "you: @" + me + (nPending ? ` · ${nPending} to confirm` : "") : "sign in";
+  chip.title = me
+    ? (nPending ? `${nPending} connection${nPending === 1 ? "" : "s"} awaiting your confirmation — find them on your node` : "tap to switch user")
+    : "say who you are to add your connections";
   document.getElementById("btnAddSelf").textContent = me ? "add people you know" : "add yourself";
   document.getElementById("fabAdd").textContent = me ? "+ add people" : "+ add yourself";
 }
@@ -835,6 +842,27 @@ function myLinkWith(handle) {
     if ((a === me && b === handle) || (b === me && a === handle)) return l;
   }
   return null;
+}
+/* links that touch me which I haven't reported yet — i.e. awaiting my confirmation */
+function pendingConfirms() {
+  if (!me) return [];
+  const out = [];
+  for (const l of links) {
+    const a = l.source.id || l.source, b = l.target.id || l.target;
+    if ((a === me || b === me) && !l.reporters.includes(me))
+      out.push({ other: a === me ? b : a, l });
+  }
+  return out;
+}
+/* after signing in or claiming: if people already reported knowing you,
+   jump to your node so the confirm list is front and center */
+function nudgePendingConfirms() {
+  const pc = pendingConfirms();
+  if (!pc.length || !nodeByid.has(me)) return false;
+  selectNode(me);
+  focusNode(me);
+  toast(`${pc.length} ${pc.length === 1 ? "person says" : "people say"} they know you — confirm to make it mutual`);
+  return true;
 }
 /* ---- staged connection edits ----
    Taps only touch this map (instant, no network, no graph re-render).
@@ -1168,6 +1196,7 @@ function updateStats() {
   const text = `${nodes.length} people · ${links.length} connections · ${mp}% have met IRL · ${pct}% claimed`;
   document.getElementById("stats").textContent = text;
   document.getElementById("legendStats").textContent = text + (store.live ? "" : " · demo data");
+  updateIdentityUI();  // keep the "N to confirm" chip badge current
 }
 
 const modeChip = document.getElementById("modeChip");
@@ -1229,7 +1258,7 @@ function showPanel(handle) {
     d.textContent = "No connections yet.";
     wrap.appendChild(d);
   }
-  for (const { other, l } of others) {
+  const makeRow = ({ other, l }) => {
     const row = document.createElement("div");
     row.className = "conn-row";
     row.innerHTML =
@@ -1239,7 +1268,36 @@ function showPanel(handle) {
     const action = quickActionFor(other);
     if (action) row.appendChild(action);
     wrap.appendChild(row);
+  };
+
+  /* on your own panel, connections awaiting your confirmation get their own
+     section at the top, with a one-tap "confirm all" */
+  const awaiting = handle === me
+    ? others.filter(({ l }) => !l.reporters.includes(me))
+    : [];
+  const rest = handle === me ? others.filter(o => !awaiting.includes(o)) : others;
+  if (awaiting.length) {
+    const head = document.createElement("div");
+    head.className = "p-pendinghead";
+    head.innerHTML = `<span>${awaiting.length} ${awaiting.length === 1 ? "person says" : "people say"} they know you</span>`;
+    const all = document.createElement("button");
+    all.type = "button"; all.className = "qadd";
+    all.textContent = "confirm all";
+    all.title = "stage every one — you still review and save below";
+    all.addEventListener("click", () => {
+      for (const { other, l } of awaiting) if (!pending.has(other)) pending.set(other, l.relation);
+      repaintPanel();
+    });
+    head.appendChild(all);
+    wrap.appendChild(head);
+    for (const o of awaiting) makeRow(o);
+    if (rest.length) {
+      const div = document.createElement("div");
+      div.style.cssText = "border-top:1px solid var(--border);margin:6px 0 4px";
+      wrap.appendChild(div);
+    }
   }
+  for (const o of rest) makeRow(o);
 
   /* quick action for the viewed node itself, up by the username */
   const pq = document.getElementById("pQuick");
@@ -1386,6 +1444,7 @@ document.getElementById("whoSubmit").addEventListener("click", () => {
   closeModal("scrimWho");
   render();        // repaint so "you" gets its ring
   repaintPanel();  // add affordances appear in an open panel
+  nudgePendingConfirms();
 });
 document.getElementById("meChip").addEventListener("click", () => openWhoModal());
 
@@ -1517,7 +1576,8 @@ document.getElementById("selfSubmit").addEventListener("click", async () => {
     closeModal("scrimSelf");
     await refresh();
     selectNode(myHandle); focusNode(myHandle);
-    toast(store.live ? "You're on the map — saved for everyone." : "You're on the map (demo — resets on reload).");
+    if (!nudgePendingConfirms())
+      toast(store.live ? "You're on the map — saved for everyone." : "You're on the map (demo — resets on reload).");
   } catch (e) {
     showFormError(errId, "Couldn't save — the backend didn't respond. Try again in a moment.");
   } finally {
