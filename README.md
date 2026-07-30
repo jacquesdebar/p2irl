@@ -64,5 +64,5 @@ example queries live at the bottom of `schema.sql`.
 
 ## Getting off the map
 
-Message **@dang** on posting2 and your node will be removed, no questions
+Contact **@dang** on posting2 and your node will be removed, no questions
 asked.
