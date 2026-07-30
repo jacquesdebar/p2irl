@@ -11,9 +11,11 @@ People add themselves by their exact posting2 handle and list who they know.
 Every connection is labeled by how it formed:
 
 - **IRL** — know each other from real life
-- **online then posting2** — knew each other online before posting2
 - **posting2 then IRL** — met on the app, then met in person
 - **posting2 only** — know each other just on posting2 (so far)
+
+(An earlier **online then posting2** category is retired; old rows fold into
+**posting2 only**.)
 
 Trust model:
 

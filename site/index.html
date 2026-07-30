@@ -36,7 +36,6 @@
     --edge-confirmed: #1baf7a;
     --edge-irl: #1baf7a;
     --edge-p2irl: #eda100;
-    --edge-online: #3455f7;
     --edge-p2only: #898781;
     --critical: #d03b3b;
     --chip-bg: #f0efec;
@@ -57,7 +56,6 @@
       --edge-confirmed: #199e70;
       --edge-irl: #199e70;
       --edge-p2irl: #facc15;
-      --edge-online: #5b76f7;
       --edge-p2only: #898781;
       --critical: #e66767;
       --chip-bg: #262624;
@@ -78,11 +76,60 @@
     --edge-confirmed: #199e70;
     --edge-irl: #199e70;
     --edge-p2irl: #facc15;
-    --edge-online: #5b76f7;
     --edge-p2only: #898781;
     --critical: #e66767;
     --chip-bg: #262624;
     --modal-scrim: rgba(0,0,0,0.55);
+  }
+
+  /* ---------- experimental colorways (temporary — pick a winner, then fold it
+     into the theme blocks above and delete the rest + the legend select) ---------- */
+  :root[data-colorway="sherbet"] {
+    --edge-irl: #eab308;      /* yellow */
+    --edge-p2irl: #0ea5e9;    /* sky blue */
+    --edge-p2only: #ec4899;   /* pink */
+  }
+  :root[data-colorway="berry"] {
+    --edge-irl: #e11d48;
+    --edge-p2irl: #7c3aed;
+    --edge-p2only: #64748b;
+  }
+  :root[data-colorway="moss"] {
+    --edge-irl: #4d7c0f;
+    --edge-p2irl: #b45309;
+    --edge-p2only: #78716c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"]))[data-colorway="sherbet"] {
+      --edge-irl: #facc15;
+      --edge-p2irl: #38bdf8;
+      --edge-p2only: #f472b6;
+    }
+    :root:where(:not([data-theme="light"]))[data-colorway="berry"] {
+      --edge-irl: #fb7185;
+      --edge-p2irl: #a78bfa;
+      --edge-p2only: #94a3b8;
+    }
+    :root:where(:not([data-theme="light"]))[data-colorway="moss"] {
+      --edge-irl: #a3e635;
+      --edge-p2irl: #fbbf24;
+      --edge-p2only: #a8a29e;
+    }
+  }
+  :root[data-theme="dark"][data-colorway="sherbet"] {
+    --edge-irl: #facc15;
+    --edge-p2irl: #38bdf8;
+    --edge-p2only: #f472b6;
+  }
+  :root[data-theme="dark"][data-colorway="berry"] {
+    --edge-irl: #fb7185;
+    --edge-p2irl: #a78bfa;
+    --edge-p2only: #94a3b8;
+  }
+  :root[data-theme="dark"][data-colorway="moss"] {
+    --edge-irl: #a3e635;
+    --edge-p2irl: #fbbf24;
+    --edge-p2only: #a8a29e;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -321,7 +368,6 @@
   .legend .lg-line { stroke-width: 2; stroke-linecap: round; }
   .legend .lg-irl { stroke: var(--edge-irl); }
   .legend .lg-p2irl { stroke: var(--edge-p2irl); }
-  .legend .lg-online { stroke: var(--edge-online); }
   .legend .lg-p2only { stroke: var(--edge-p2only); }
   .legend .lg-oneway { stroke: var(--edge-p2only); stroke-dasharray: 4 3; }
   .legend .divider { grid-column: 1 / -1; border-top: 1px solid var(--border); margin: 2px 0; }
@@ -330,6 +376,15 @@
     cursor: pointer; padding-top: 2px; color: var(--ink-2); user-select: none;
   }
   .legend-toggle input { accent-color: var(--node-claimed); margin: 0; cursor: pointer; }
+  .legend-colorway {
+    grid-column: 1 / -1; display: flex; align-items: center; gap: 7px;
+    padding-top: 2px; color: var(--ink-2);
+  }
+  .legend-colorway select {
+    flex: 1; font-family: inherit; font-size: 11px; color: var(--ink);
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 6px; cursor: pointer;
+  }
 
   /* mobile-only elements, hidden on desktop */
   .keytoggle, .fab, .sheet-handle, .legend-stats { display: none; }
@@ -420,7 +475,7 @@
       <g stroke-linecap="round" stroke-width="7">
         <line x1="28" y1="37" x2="14" y2="15" stroke="var(--edge-irl)"/>
         <line x1="28" y1="37" x2="52" y2="21" stroke="var(--edge-p2irl)"/>
-        <line x1="28" y1="37" x2="46" y2="54" stroke="var(--edge-online)"/>
+        <line x1="28" y1="37" x2="46" y2="54" stroke="var(--edge-p2only)"/>
       </g>
       <circle cx="28" cy="37" r="8" fill="var(--ink)"/>
       <circle cx="14" cy="15" r="6.5" fill="var(--ink)"/>
@@ -457,8 +512,6 @@
     <div class="divider"></div>
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-irl"></line></svg>
     <span>IRL</span>
-    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-online"></line></svg>
-    <span>online then posting2</span>
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2irl"></line></svg>
     <span>posting2 then IRL</span>
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2only"></line></svg>
@@ -467,6 +520,14 @@
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-oneway"></line></svg>
     <span>dashed until both report it</span>
     <label class="legend-toggle"><input type="checkbox" id="toggleUnconfirmed" checked><span>show unconfirmed connections</span></label>
+    <label class="legend-colorway"><span>colors</span>
+      <select id="colorwaySelect">
+        <option value="classic">classic</option>
+        <option value="sherbet">sherbet</option>
+        <option value="berry">berry</option>
+        <option value="moss">moss</option>
+      </select>
+    </label>
     <div class="legend-stats" id="legendStats"></div>
   </div>
 
@@ -565,7 +626,6 @@
       <p><strong>How it works:</strong> add yourself with your exact posting2 handle and list the people you know. Each connection gets a color for how it formed:</p>
       <ul>
         <li><strong>IRL</strong> — you know each other from real life</li>
-        <li><strong>online then posting2</strong> — knew each other online somewhere else first</li>
         <li><strong>posting2 then IRL</strong> — met on the app, then in person</li>
         <li><strong>posting2 only</strong> — so far, anyway</li>
       </ul>
@@ -597,17 +657,17 @@ const CONFIG = {
 
 /* Connection provenance — knew-before-posting2 first, posting2-native last */
 const RELATIONS = [
-  { value: "irl",          label: "IRL",                  desc: "know each other from real life" },
-  { value: "online-first", label: "online then posting2", desc: "knew each other online before posting2" },
-  { value: "posting2-irl", label: "posting2 then IRL",    desc: "met on posting2, then met in person" },
-  { value: "posting2",     label: "posting2 only",        desc: "know each other only on posting2 (so far)" },
+  { value: "irl",          label: "IRL",               desc: "know each other from real life" },
+  { value: "posting2-irl", label: "posting2 then IRL", desc: "met on posting2, then met in person" },
+  { value: "posting2",     label: "posting2 only",     desc: "know each other only on posting2 (so far)" },
 ];
+/* retired categories fold into a surviving one — old rows may still exist in the DB */
+const LEGACY_RELATIONS = { "online-first": "posting2" };
 const RELMAP = new Map(RELATIONS.map(r => [r.value, r]));
 function relInfo(v) { return RELMAP.get(v) || { value: v, label: v, desc: "" }; }
 const EDGE_COLORS = {
   "irl": "var(--edge-irl)",
   "posting2-irl": "var(--edge-p2irl)",
-  "online-first": "var(--edge-online)",
   "posting2": "var(--edge-p2only)",
 };
 function edgeColor(v) { return EDGE_COLORS[v] || "var(--edge-p2only)"; }
@@ -674,23 +734,23 @@ const SEED_LINKS = [
   { a:"dirtbag", b:"squisher", relation:"irl", added_by:"dirtbag" },
   { a:"squisher", b:"lorn", relation:"posting2-irl", added_by:"squisher" },
   { a:"lorn", b:"squisher", relation:"posting2-irl", added_by:"lorn" },
-  { a:"coolgirl", b:"blastangel", relation:"online-first", added_by:"coolgirl" },
+  { a:"coolgirl", b:"blastangel", relation:"posting2", added_by:"coolgirl" },
   { a:"dirtbag", b:"pork", relation:"irl", added_by:"dirtbag" },
   { a:"coolgirl", b:"fun.", relation:"posting2", added_by:"coolgirl" },
   // internet-era friends
-  { a:"omegle", b:"nimrod", relation:"online-first", added_by:"omegle" },
-  { a:"nimrod", b:"omegle", relation:"online-first", added_by:"nimrod" },
-  { a:"omegle", b:"schnitzel", relation:"online-first", added_by:"omegle" },
+  { a:"omegle", b:"nimrod", relation:"posting2", added_by:"omegle" },
+  { a:"nimrod", b:"omegle", relation:"posting2", added_by:"nimrod" },
+  { a:"omegle", b:"schnitzel", relation:"posting2", added_by:"omegle" },
   { a:"nimrod", b:"covid", relation:"posting2", added_by:"nimrod" },
   { a:"covid", b:"nimrod", relation:"posting2", added_by:"covid" },
   { a:"omegle", b:"covid", relation:"posting2", added_by:"omegle" },
   { a:"schnitzel", b:"linguistics", relation:"posting2-irl", added_by:"schnitzel" },
-  { a:"linguistics", b:"bucket", relation:"online-first", added_by:"linguistics" },
+  { a:"linguistics", b:"bucket", relation:"posting2", added_by:"linguistics" },
   // bridges between clusters
   { a:"izzy", b:"coolgirl", relation:"posting2-irl", added_by:"izzy" },
   { a:"coolgirl", b:"izzy", relation:"posting2-irl", added_by:"coolgirl" },
-  { a:"ninja", b:"omegle", relation:"online-first", added_by:"ninja" },
-  { a:"omegle", b:"ninja", relation:"online-first", added_by:"omegle" },
+  { a:"ninja", b:"omegle", relation:"posting2", added_by:"ninja" },
+  { a:"omegle", b:"ninja", relation:"posting2", added_by:"omegle" },
   { a:"squisher", b:"schnitzel", relation:"posting2", added_by:"squisher" },
   { a:"schnitzel", b:"squisher", relation:"posting2", added_by:"schnitzel" },
   { a:"ema", b:"lizaminnelli", relation:"posting2", added_by:"ema" },
@@ -781,7 +841,7 @@ function buildGraph(people, rawLinks) {
     const k = pairKey(a, b);
     if (!groups.has(k)) groups.set(k, { a, b, relations: [], reporters: new Set() });
     const g = groups.get(k);
-    if (l.relation) g.relations.push(l.relation);
+    if (l.relation) g.relations.push(LEGACY_RELATIONS[l.relation] || l.relation);
     if (l.added_by) g.reporters.add(normHandle(l.added_by));
     // anyone mentioned in a link gets at least an unconfirmed node
     for (const h of [a, b]) {
@@ -1379,6 +1439,13 @@ themeBtn.addEventListener("click", () => {
   else document.documentElement.setAttribute("data-theme", t);
   themeBtn.title = "Theme: " + t;
   themeBtn.textContent = t === "auto" ? "◐" : (t === "light" ? "☀" : "☾");
+});
+
+/* ================= colorways (temporary experiment) ================= */
+document.getElementById("colorwaySelect").addEventListener("change", (ev) => {
+  const c = ev.target.value;
+  if (c === "classic") document.documentElement.removeAttribute("data-colorway");
+  else document.documentElement.setAttribute("data-colorway", c);
 });
 
 /* ================= mobile: legend toggle + sheet swipe-to-close ================= */

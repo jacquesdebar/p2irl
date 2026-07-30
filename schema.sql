@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS links (
   a          TEXT NOT NULL CHECK (length(a) BETWEEN 2 AND 32),
   b          TEXT NOT NULL CHECK (length(b) BETWEEN 2 AND 32),
   relation   TEXT NOT NULL DEFAULT 'posting2'
-             CHECK (relation IN ('irl','posting2-irl','online-first','posting2')),
+             CHECK (relation IN ('irl','posting2-irl','posting2')),
   added_by   TEXT NOT NULL,
   pair_key   TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -38,3 +38,8 @@ CREATE INDEX IF NOT EXISTS idx_links_pair ON links (pair_key);
 --
 -- Remove a single reported edge:
 --   DELETE FROM links WHERE pair_key = 'handle1||handle2' AND added_by = 'handle1';
+--
+-- The 'online-first' category is retired. The app folds old rows into
+-- 'posting2' at render time, so this is optional — but an existing DB
+-- (whose table still carries the old CHECK) can be cleaned up with:
+--   UPDATE links SET relation = 'posting2' WHERE relation = 'online-first';

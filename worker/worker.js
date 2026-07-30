@@ -12,7 +12,8 @@
 const APP_URL = "https://p2irl.pages.dev/";
 
 const HANDLE = /^[a-z0-9._-]{2,32}$/;
-const RELATIONS = new Set(["irl", "posting2-irl", "online-first", "posting2"]);
+/* "online-first" is retired — existing rows are folded into "posting2" client-side */
+const RELATIONS = new Set(["irl", "posting2-irl", "posting2"]);
 const norm = (h) => String(h || "").trim().replace(/^@+/, "").toLowerCase();
 
 const CORS = {
