@@ -486,6 +486,7 @@
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-oneway"></line></svg>
     <span>dashed until both report it</span>
     <label class="legend-toggle"><input type="checkbox" id="toggleUnconfirmed" checked><span>show unconfirmed connections</span></label>
+    <label class="legend-toggle"><input type="checkbox" id="toggleP2Only" checked><span>show posting2-only connections</span></label>
     <div class="legend-colorway" id="colorwayRow"><span>colors</span></div>
     <div class="legend-colorway" id="nodeColorRow"><span>nodes</span></div>
     <div class="legend-colorway" id="accentRow"><span>accent</span></div>
@@ -772,7 +773,12 @@ let nodeByid = new Map();
 let selected = null;   // handle of selected node
 let me = loadMe();     // handle of the viewer — one user per device, cached in localStorage
 let showUnconfirmed = true;   // legend toggle: include one-sided (dashed) edges
-function visibleLinks() { return showUnconfirmed ? links : links.filter(l => l.confirmed); }
+let showP2Only = true;        // legend toggle: include posting2-only edges (viz-only filter)
+function visibleLinks() {
+  return links.filter(l =>
+    (showUnconfirmed || l.confirmed) &&
+    (showP2Only || l.relation !== "posting2"));
+}
 const posCache = new Map();  // handle -> {x, y} so re-renders don't scatter the graph
 const pending = new Map();  // other-handle -> relation: staged, unsaved connection adds
 
@@ -1678,6 +1684,11 @@ legendToggle.addEventListener("click", () => {
 
 document.getElementById("toggleUnconfirmed").addEventListener("change", (ev) => {
   showUnconfirmed = ev.target.checked;
+  render();
+  if (sim) sim.alpha(0.5).restart();
+});
+document.getElementById("toggleP2Only").addEventListener("change", (ev) => {
+  showP2Only = ev.target.checked;
   render();
   if (sim) sim.alpha(0.5).restart();
 });
