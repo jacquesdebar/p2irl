@@ -486,7 +486,7 @@
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-oneway"></line></svg>
     <span>dashed until both report it</span>
     <label class="legend-toggle"><input type="checkbox" id="toggleUnconfirmed" checked><span>show unconfirmed connections</span></label>
-    <label class="legend-toggle"><input type="checkbox" id="toggleP2Only" checked><span>show posting2-only connections</span></label>
+    <label class="legend-toggle"><input type="checkbox" id="toggleP2Only"><span>show posting2-only connections</span></label>
     <div class="legend-colorway" id="colorwayRow"><span>colors</span></div>
     <div class="legend-colorway" id="nodeColorRow"><span>nodes</span></div>
     <div class="legend-colorway" id="accentRow"><span>accent</span></div>
@@ -773,7 +773,7 @@ let nodeByid = new Map();
 let selected = null;   // handle of selected node
 let me = loadMe();     // handle of the viewer — one user per device, cached in localStorage
 let showUnconfirmed = true;   // legend toggle: include one-sided (dashed) edges
-let showP2Only = true;        // legend toggle: include posting2-only edges (viz-only filter)
+let showP2Only = false;       // legend toggle: include posting2-only edges (viz-only filter; off by default)
 function visibleLinks() {
   return links.filter(l =>
     (showUnconfirmed || l.confirmed) &&
