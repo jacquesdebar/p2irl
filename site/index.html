@@ -33,7 +33,8 @@
     --grid: #2c2c2a;
     --baseline: #383835;
     --border: rgba(255,255,255,0.10);
-    --accent: #6d8cff;         /* UI chrome: buttons, focus rings, chips */
+    --accent: #6d8cff;         /* UI chrome: buttons, focus rings, chips (randomized per device on first visit) */
+    --accent-ink: #ffffff;     /* text on accent backgrounds — auto-darkened for bright accents */
     --node-claimed: #ffffff;   /* node dots (overridden by the node-color experiment) */
     --edge-confirmed: #2dd4a0;
     --edge-irl: #2dd4a0;
@@ -115,7 +116,7 @@
   }
   button.btn:hover { border-color: var(--baseline); }
   button.btn.primary {
-    background: var(--accent); color: #fff; border-color: transparent;
+    background: var(--accent); color: var(--accent-ink); border-color: transparent;
   }
   button.btn.primary:hover { filter: brightness(1.08); }
   button.btn.small { font-size: 12px; padding: 5px 10px; }
@@ -378,7 +379,7 @@
       display: block; position: absolute; right: 14px;
       bottom: calc(18px + env(safe-area-inset-bottom));
       z-index: 8; font-family: inherit; font-size: 15px; font-weight: 700;
-      background: var(--accent); color: #fff; border: none;
+      background: var(--accent); color: var(--accent-ink); border: none;
       border-radius: 999px; padding: 14px 20px; cursor: pointer;
       box-shadow: 0 6px 20px rgba(0,0,0,0.28);
     }
@@ -1513,40 +1514,78 @@ document.getElementById("aboutClose").addEventListener("click", () => closeModal
    copy its values into :root, then delete this whole section, the two
    .legend-colorway rows, and the swatch-dd CSS. */
 const COLORWAYS = {
-  classic: ["#2dd4a0", "#facc15", "#a1a09a"],
-  sherbet: ["#ffd60a", "#4dd2ff", "#ff6bcb"],
-  berry:   ["#ff4d6d", "#b388ff", "#a5b8cf"],
-  moss:    ["#bef264", "#ffb020", "#b3ada6"],
-  thistle: ["#bef264", "#b48bff", "#a3ad93"],
-  miami:   ["#ff3d9a", "#2ee6e6", "#9d8ec7"],
-  citrus:  ["#b4f92c", "#ffa726", "#ff8a80"],
-  ocean:   ["#35f0d0", "#4c8dff", "#8fb3d9"],
-  ember:   ["#ff5a36", "#ffc53d", "#c98d76"],
-  nebula:  ["#e879f9", "#818cf8", "#67e8f9"],
-  arcade:  ["#ff4757", "#2ed573", "#6c7bff"],
-  neon:    ["#39ff14", "#ff10f0", "#00e5ff"],
-  pastel:  ["#ffe08a", "#9ed0ff", "#ffb3d9"],
+  classic:   ["#2dd4a0", "#facc15", "#a1a09a"],
+  sherbet:   ["#ffd60a", "#4dd2ff", "#ff6bcb"],
+  berry:     ["#ff4d6d", "#b388ff", "#a5b8cf"],
+  moss:      ["#bef264", "#ffb020", "#b3ada6"],
+  miami:     ["#ff3d9a", "#2ee6e6", "#9d8ec7"],
+  citrus:    ["#b4f92c", "#ffa726", "#ff8a80"],
+  ocean:     ["#35f0d0", "#4c8dff", "#8fb3d9"],
+  ember:     ["#ff5a36", "#ffc53d", "#c98d76"],
+  nebula:    ["#e879f9", "#818cf8", "#67e8f9"],
+  arcade:    ["#ff4757", "#2ed573", "#6c7bff"],
+  neon:      ["#39ff14", "#ff10f0", "#00e5ff"],
+  pastel:    ["#ffe08a", "#9ed0ff", "#ffb3d9"],
+  /* greyscale-third experiments: posting2-only fades to white/grey */
+  taxi:      ["#ffd60a", "#ffffff", "#57564f"],
+  hazard:    ["#ffd60a", "#ff5a36", "#9a988f"],
+  flamingo:  ["#ff6bcb", "#ff9d4d", "#c9c7bf"],
+  valentine: ["#ff4d6d", "#ffffff", "#8a8881"],
+  midnight:  ["#4c8dff", "#b48bff", "#54525b"],
+  matcha:    ["#bef264", "#3dcf8e", "#b3b1a8"],
 };
 const NODE_COLORS = {
-  white:   ["#ffffff"],
-  indigo:  ["#6d8cff"],
-  emerald: ["#2ee6a8"],
-  coral:   ["#ff9d4d"],
-  violet:  ["#b48bff"],
+  white:      ["#ffffff"],
+  silver:     ["#b9b7ae"],
+  indigo:     ["#6d8cff"],
+  sky:        ["#4dd2ff"],
+  teal:       ["#2ee6d6"],
+  emerald:    ["#2ee6a8"],
+  lime:       ["#bef264"],
+  gold:       ["#ffd60a"],
+  coral:      ["#ff9d4d"],
+  "hot pink": ["#ff6bcb"],
+  crimson:    ["#ff5a5f"],
+  violet:     ["#b48bff"],
 };
-/* the accent drives UI chrome AND the "you" node */
+/* the accent drives UI chrome AND the "you" node.
+   First visit gets a random one (then it's cached in localStorage). */
 const ACCENTS = {
-  indigo:    ["#6d8cff"],
-  ocean:     ["#3aa5ff"],
-  teal:      ["#14c8b8"],
-  emerald:   ["#10c98d"],
-  violet:    ["#a78bfa"],
-  magenta:   ["#d55dff"],
+  indigo:     ["#6d8cff"],
+  cobalt:     ["#4763ff"],
+  ocean:      ["#3aa5ff"],
+  aqua:       ["#22d3ee"],
+  teal:       ["#14c8b8"],
+  emerald:    ["#10c98d"],
+  lime:       ["#9bce22"],
+  gold:       ["#eab308"],
+  tangerine:  ["#ff8a3d"],
+  crimson:    ["#f43f5e"],
   "hot pink": ["#ff5da2"],
-  tangerine: ["#ff8a3d"],
-  crimson:   ["#f43f5e"],
+  magenta:    ["#d55dff"],
+  violet:     ["#a78bfa"],
+  slate:      ["#7d93ad"],
 };
+function applyAccent(name) {
+  const hex = (ACCENTS[name] || ACCENTS.indigo)[0];
+  const s = document.documentElement.style;
+  s.setProperty("--accent", hex);
+  /* bright accents get dark button text, deep ones keep white */
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  s.setProperty("--accent-ink", (0.299 * r + 0.587 * g + 0.114 * b) > 160 ? "#111111" : "#ffffff");
+}
+function initialAccent() {
+  try {
+    const stored = localStorage.getItem("p2irl_accent");
+    if (stored && ACCENTS[stored]) return stored;
+  } catch (e) {}
+  const names = Object.keys(ACCENTS);
+  const pick = names[Math.floor(Math.random() * names.length)];
+  try { localStorage.setItem("p2irl_accent", pick); } catch (e) {}
+  return pick;
+}
 
+const allSwatchDDs = [];  // so opening one dropdown closes the others
 function swatchDropdown(mount, entries, initial, onPick) {
   const wrap = document.createElement("div");
   wrap.className = "swatch-dd";
@@ -1574,11 +1613,16 @@ function swatchDropdown(mount, entries, initial, onPick) {
     }
   }
   function close() { wrap.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); }
+  allSwatchDDs.push(close);
   btn.addEventListener("click", (ev) => {
     ev.stopPropagation();
-    renderMenu();
-    const open = wrap.classList.toggle("open");
-    btn.setAttribute("aria-expanded", String(open));
+    const wasOpen = wrap.classList.contains("open");
+    for (const c of allSwatchDDs) c();   // close every dropdown, then reopen this one if it was closed
+    if (!wasOpen) {
+      renderMenu();
+      wrap.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+    }
   });
   document.addEventListener("click", (ev) => { if (!wrap.contains(ev.target)) close(); });
   document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") close(); });
@@ -1597,8 +1641,11 @@ swatchDropdown(document.getElementById("colorwayRow"), COLORWAYS, "classic", (na
 swatchDropdown(document.getElementById("nodeColorRow"), NODE_COLORS, "white", (name) => {
   document.documentElement.style.setProperty("--node-claimed", NODE_COLORS[name][0]);
 });
-swatchDropdown(document.getElementById("accentRow"), ACCENTS, "indigo", (name) => {
-  document.documentElement.style.setProperty("--accent", ACCENTS[name][0]);
+const accentInit = initialAccent();
+applyAccent(accentInit);
+swatchDropdown(document.getElementById("accentRow"), ACCENTS, accentInit, (name) => {
+  applyAccent(name);
+  try { localStorage.setItem("p2irl_accent", name); } catch (e) {}
 });
 
 /* ================= mobile: legend toggle + sheet swipe-to-close ================= */
