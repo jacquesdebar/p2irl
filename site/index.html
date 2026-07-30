@@ -48,6 +48,7 @@
   /* Experimental colorway/node-color palettes live in the COLORWAYS and
      NODE_COLORS tables in the script (temporary — see comment there). */
 
+
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
   body {
@@ -971,6 +972,23 @@ function nodeRadius(d) {
   return 6 + Math.min(10, d.deg * 1.4);
 }
 
+/* ---------- TEMPORARY JOKE: claimed nodes wear the face ----------
+   Set FACE_NODES to false (or delete this block, the nodeFill() calls,
+   and site/bg.jpg) to restore normal node colors. */
+const FACE_NODES = true;
+svg.append("defs").append("pattern")
+  .attr("id", "p2face")
+  .attr("patternContentUnits", "objectBoundingBox")
+  .attr("width", 1).attr("height", 1)
+  .append("image")
+  .attr("href", "bg.jpg")
+  .attr("width", 1).attr("height", 1)
+  .attr("preserveAspectRatio", "xMidYMid slice");
+function nodeFill(d) {
+  if (FACE_NODES && (d.claimed || d.id === me)) return "url(#p2face)";
+  return d.id === me ? "var(--accent)" : d.claimed ? "var(--node-claimed)" : "var(--surface-1)";
+}
+
 function render() {
   measure();
 
@@ -1032,7 +1050,7 @@ function render() {
   nodeAll.select("circle.halo").attr("r", d => nodeRadius(d) + 9);
   nodeAll.select("circle.dot")
     .attr("r", d => nodeRadius(d))
-    .attr("fill", d => d.id === me ? "var(--accent)" : d.claimed ? "var(--node-claimed)" : "var(--surface-1)")
+    .attr("fill", nodeFill)
     .attr("stroke", d => d.claimed ? "var(--surface-1)" : "var(--muted)")
     .attr("stroke-width", d => d.claimed ? 1.5 : 1.8)
     .attr("stroke-dasharray", d => d.claimed ? null : "3 2.5");
@@ -1099,7 +1117,7 @@ function applyHighlight() {
   /* selected = bullseye: dark gap ring on the dot + white outer ring on the halo,
      so it reads on any node color (including white) */
   gNodes.selectAll("g.nodeg circle.dot")
-    .attr("fill", d => d.id === me ? "var(--accent)" : d.claimed ? "var(--node-claimed)" : "var(--surface-1)")
+    .attr("fill", nodeFill)
     .attr("stroke", d => d.id === selected ? "var(--page)"
       : d.id === me ? "var(--ink)"
       : (d.claimed ? "var(--surface-1)" : "var(--muted)"))
@@ -1542,6 +1560,13 @@ const COLORWAYS = {
   valentine: ["#ff4d6d", "#ffffff", "#8a8881"],
   midnight:  ["#4c8dff", "#b48bff", "#54525b"],
   matcha:    ["#bef264", "#3dcf8e", "#b3b1a8"],
+  /* round two */
+  vapor:     ["#ff71ce", "#05ffa1", "#b967ff"],
+  koi:       ["#ff6b35", "#ffffff", "#8d8d86"],
+  royal:     ["#ffd60a", "#a855f7", "#98959e"],
+  dusk:      ["#ff8fa3", "#c084fc", "#6b6880"],
+  lemonade:  ["#fde047", "#ff9ecd", "#d9d6c3"],
+  mono:      ["#ffffff", "#b9b7ae", "#55534c"],
 };
 const NODE_COLORS = {
   white:      ["#ffffff"],
