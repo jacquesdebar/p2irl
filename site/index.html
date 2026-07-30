@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>p2irl</title>
+<meta name="description" content="who do u know here — a crowdsourced map of how posting2 knows each other, IRL and online">
+<meta property="og:title" content="p2irl">
+<meta property="og:site_name" content="p2irl">
+<meta property="og:description" content="who do u know here — a crowdsourced map of how posting2 knows each other, IRL and online">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://p2irl.pages.dev/">
+<meta property="og:image" content="https://p2irl.pages.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="p2irl">
+<meta name="twitter:description" content="who do u know here">
+<meta name="twitter:image" content="https://p2irl.pages.dev/og.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxYTFhMTkiLz4KICA8ZyBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgPGxpbmUgeDE9IjI4IiB5MT0iMzciIHgyPSIxNCIgeTI9IjE1IiBzdHJva2U9IiMxYmFmN2EiIHN0cm9rZS13aWR0aD0iNiIvPgogICAgPGxpbmUgeDE9IjI4IiB5MT0iMzciIHgyPSI1MiIgeTI9IjIxIiBzdHJva2U9IiNmYWNjMTUiIHN0cm9rZS13aWR0aD0iNiIvPgogICAgPGxpbmUgeDE9IjI4IiB5MT0iMzciIHgyPSI0NiIgeTI9IjU0IiBzdHJva2U9IiM1Yjc2ZjciIHN0cm9rZS13aWR0aD0iNiIvPgogIDwvZz4KICA8Y2lyY2xlIGN4PSIyOCIgY3k9IjM3IiByPSI3LjUiIGZpbGw9IiNmY2ZjZmIiLz4KICA8Y2lyY2xlIGN4PSIxNCIgY3k9IjE1IiByPSI2IiBmaWxsPSIjZmNmY2ZiIi8+CiAgPGNpcmNsZSBjeD0iNTIiIGN5PSIyMSIgcj0iNiIgZmlsbD0iI2ZjZmNmYiIvPgogIDxjaXJjbGUgY3g9IjQ2IiBjeT0iNTQiIHI9IjYiIGZpbGw9IiNmY2ZjZmIiLz4KPC9zdmc+Cg==">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEEUlEQVR4nMSXXUhcRxTH/3M//NgPN/Ej3bURBV2xUq0UglKTxn4QmzRtQVLSUvoS8pCCEuJD8SlIEemDkIf44EMQXwqFhn0qcZsSFNtYU0ORoiEVXY1rdDer0TTXzW6yeyczN+7m7uom180m+cHCzDkz55yZM/fsjAQduxgmU84ZSkkDQOsIIXuQASildwAyQQgdCwZD59YZMR2JNex2+2FBwAUmKsZLhS6pKk76fL7BeAAOh6OZELjxClFVeoQHQWw2226zOXeKxeLAK4UuKUqwRszPzz/Fcn1MryorK8PRo5+itrYWirKBtbU1ZB5ileUsn8QORoPuKKClpQU9PT2QJEnrqyxh7e3tcLlcyDTct0ApGvTC1tbWuHOOwE4ml70MuG+2A6RULywpKdkycDuZUXg69+9v1Nqjo3/B4/HEddy3lDzB6/WioqIiURbwIR2MpFNIntTb24tIJBLvq6DovX0NMGdjpxhJJykudtDkiXzbGg80gnxSh9GIH3PKKuj4LDAwAqPkmSn+nZyBICYGHg6H4XQ6431pu8nz8/Pajw65QTo+47kC2VcOdWwG5OYSnkfTuyp+bItCeLQAiM4EHU+xHuFZhsjiKjB042n/G3aYZDHleL7qntNRDHSqsBcQUP95dtR16WRngKc4wcd2KUiAOzzbApJv0br0Ciuarr+3DIutmjuO4VulOHexHPLuA1o/+SswFgB3WlUMoa1Za0sqgdN1E+TOPUxPTyM36yHOnlRx7KNEMxevEPxwQcD/G+SZtiUYgOedXvfgxJdf4/u3PobpiyxNHg4FEVrohjXYD/2qO86LGP5HMGLaWACc5rtWdL59JEGWnWNCdmUX1Lll4N7g5qrF5646rQAOvf9BSl0o5xBOnfnN8KrTCmDv3tTleMpbmpZzjuFZi4velLrbPgXpYjiAy5d/T6mbX2uErWgf0kG0Wq2dRgbOzs6A3yXr6+shy7ImC4VV/OxWcXVCwJ6yz3H/7iQe3L+FnWCoDujhzisrK7W2Z86H6oP9yCuo0fqqGsGNP08jsDBo2N6OA0hGEHPxzocD2PXGkxSwKzj+G+vA8uwvhua/cACaESELNQf7UPBmE2ysYh8/LKCqdANqNISRkRF0d3cjEAhsO1e0WCzfsX87C14EGoX/1q8w5ZWj7UQV3qsTYMrNhtlsRnV1Nbv223Hp0ta0sN3yC/zFgkzAgpj6ow01FdEtqqamVEWMTLBLKc1MANwcq8DRyAPD47lvXgf62G8dGWJ4eMiQbNNnn6goyrrFYp1m0R9HBhgfv47CwkIUFRUhGAzC7Xajq6tLayeifrW87L/22h+n8fsV24kZUZT6ZVl6yJ7nYTbQyr4OMzLA5vP8KnsJ/cSe59+urKxMxnSPAQAA//96PuM2AAAABklEQVQDAChokYFnxX7KAAAAAElFTkSuQmCC">
+<link rel="apple-touch-icon" sizes="180x180" href="https://p2irl.pages.dev/icon-180.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --node-claimed: #3455f7;
+    --edge-confirmed: #1baf7a;
+    --edge-irl: #1baf7a;
+    --edge-p2irl: #eda100;
+    --edge-online: #3455f7;
+    --edge-p2only: #898781;
+    --critical: #d03b3b;
+    --chip-bg: #f0efec;
+    --modal-scrim: rgba(11,11,11,0.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --node-claimed: #5b76f7;
+      --edge-confirmed: #199e70;
+      --edge-irl: #199e70;
+      --edge-p2irl: #facc15;
+      --edge-online: #5b76f7;
+      --edge-p2only: #898781;
+      --critical: #e66767;
+      --chip-bg: #262624;
+      --modal-scrim: rgba(0,0,0,0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --node-claimed: #5b76f7;
+    --edge-confirmed: #199e70;
+    --edge-irl: #199e70;
+    --edge-p2irl: #facc15;
+    --edge-online: #5b76f7;
+    --edge-p2only: #898781;
+    --critical: #e66767;
+    --chip-bg: #262624;
+    --modal-scrim: rgba(0,0,0,0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  /* ---------- header ---------- */
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--page);
+    position: relative; z-index: 20;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; min-width: 150px; }
+  .brand .logo { width: 26px; height: 26px; flex: none; }
+  .brand-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .brand h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand .sub { font-size: 11px; color: var(--muted); }
+  .stats { font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+  .chip {
+    font-size: 11px; padding: 3px 9px; border-radius: 999px;
+    background: var(--chip-bg); color: var(--ink-2);
+    border: 1px solid var(--border); white-space: nowrap;
+  }
+  .chip.demo { color: var(--ink-2); }
+  .chip.live { color: var(--edge-confirmed); font-weight: 600; }
+  .spacer { flex: 1; }
+
+  .searchwrap { position: relative; }
+  .searchwrap input {
+    width: 210px; padding: 7px 11px; font-size: 13px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-1); color: var(--ink);
+    outline: none;
+  }
+  .searchwrap input:focus { border-color: var(--node-claimed); }
+  .search-results {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    max-height: 260px; overflow-y: auto; display: none; z-index: 40;
+  }
+  .search-results.open { display: block; }
+  .search-results button {
+    display: flex; width: 100%; align-items: baseline; gap: 8px;
+    padding: 8px 11px; border: none; background: none; cursor: pointer;
+    font-size: 13px; color: var(--ink); text-align: left;
+    font-family: inherit;
+  }
+  .search-results button:hover, .search-results button.active { background: var(--chip-bg); }
+  .search-results .rname { color: var(--muted); font-size: 11px; }
+
+  button.btn {
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 7px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface-1); color: var(--ink);
+    white-space: nowrap;
+  }
+  button.btn:hover { border-color: var(--baseline); }
+  button.btn.primary {
+    background: var(--node-claimed); color: #fff; border-color: transparent;
+  }
+  button.btn.primary:hover { filter: brightness(1.08); }
+  button.btn.small { font-size: 12px; padding: 5px 10px; }
+  button.icon {
+    font-family: inherit; width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--ink-2); cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  button.icon:hover { border-color: var(--baseline); }
+  /* uniform control height in the navbar */
+  header .searchwrap input, header button.btn, header button.icon { height: 36px; }
+  header button.icon { width: 36px; }
+
+  /* ---------- stage ---------- */
+  #stage { position: relative; width: 100%; height: calc(100% - 53px); }
+  #graph { width: 100%; height: 100%; display: block; background: var(--surface-1); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+  #graph:active { cursor: grabbing; }
+
+  .legend {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--page); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 13px;
+    font-size: 11px; color: var(--ink-2);
+    display: grid; grid-template-columns: 26px auto; gap: 6px 8px;
+    align-items: center; z-index: 5;
+  }
+  .legend svg { display: block; }
+
+  .zoomctrl {
+    position: absolute; bottom: 16px; left: 14px; display: flex;
+    flex-direction: column; gap: 6px; z-index: 5;
+  }
+
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 60;
+    background: var(--ink); color: var(--page);
+    font-size: 12px; line-height: 1.45;
+    padding: 7px 10px; border-radius: 8px;
+    max-width: 240px; display: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  #tooltip .t-handle { font-weight: 700; }
+  #tooltip .t-sub { opacity: 0.75; font-size: 11px; }
+
+  /* ---------- side panel ---------- */
+  #panel {
+    position: absolute; top: 14px; right: 14px; bottom: 16px;
+    width: 300px; background: var(--page);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; display: none; flex-direction: column; gap: 10px;
+    z-index: 10; overflow-y: auto;
+  }
+  #panel.open { display: flex; }
+  #panel .p-close {
+    position: absolute; top: 10px; right: 10px;
+  }
+  #panel h2 { font-size: 17px; letter-spacing: -0.01em; word-break: break-all; padding-right: 28px; }
+  #panel .p-name { font-size: 13px; color: var(--ink-2); margin-top: -6px; }
+  .status-chip {
+    align-self: flex-start; font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border);
+  }
+  .status-chip.claimed { color: var(--node-claimed); background: var(--chip-bg); }
+  .status-chip.unclaimed { color: var(--muted); background: var(--chip-bg); border-style: dashed; }
+  #panel .p-meta { font-size: 12px; color: var(--muted); }
+  #panel .conns { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+  #panel .conns h3 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); font-weight: 600; margin-bottom: 4px;
+  }
+  .conn-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 8px; font-size: 13px;
+    cursor: pointer; border: none; background: none; text-align: left;
+    font-family: inherit; color: var(--ink); width: 100%;
+  }
+  .conn-row:hover { background: var(--chip-bg); }
+  .conn-row .c-rel { color: var(--muted); font-size: 11px; margin-left: auto; white-space: nowrap; }
+  .conn-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .conn-dot.confirmed { background: var(--edge-confirmed); }
+  .conn-dot.oneway { background: none; border: 1.5px dashed var(--muted); }
+  #panel .p-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 10px; }
+
+  /* ---------- modals ---------- */
+  .scrim {
+    position: fixed; inset: 0; background: var(--modal-scrim);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+    padding: 20px;
+  }
+  .scrim.open { display: flex; }
+  .modal {
+    background: var(--page); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; width: 100%; max-width: 460px;
+    max-height: 88vh; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .modal h2 { font-size: 17px; letter-spacing: -0.01em; }
+  .modal p.help { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .field input, .field select {
+    font-family: inherit; font-size: 13.5px; padding: 8px 11px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-1); color: var(--ink); outline: none; width: 100%;
+  }
+  .field input:focus, .field select:focus { border-color: var(--node-claimed); }
+  .field .hint { font-size: 11px; color: var(--muted); min-height: 14px; }
+  .field .hint.known { color: var(--edge-confirmed); }
+  .conn-inputs { display: flex; flex-direction: column; gap: 8px; }
+  /* each connection is a self-contained card; the × removes the whole card */
+  .conn-input-row {
+    display: grid; grid-template-columns: 1fr 168px 32px; gap: 6px 8px; align-items: center;
+    background: var(--chip-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px;
+  }
+  .conn-input-row .at-field { grid-column: 1; grid-row: 1; }
+  .conn-input-row select { grid-column: 2; grid-row: 1; }
+  .conn-input-row .rm { grid-column: 3; grid-row: 1; }
+  .conn-input-row input, .conn-input-row select {
+    font-family: inherit; font-size: 13px; padding: 7px 9px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-1); color: var(--ink); outline: none; width: 100%;
+  }
+  .conn-input-row .rm {
+    font-family: inherit; border: none; background: none; color: var(--muted);
+    cursor: pointer; font-size: 17px; line-height: 1; width: 32px; height: 32px;
+    border-radius: 8px;
+  }
+  .conn-input-row .rm:hover { color: var(--critical); background: var(--surface-1); }
+  .rowhint { font-size: 11px; color: var(--muted); grid-column: 1 / 3; grid-row: 2; }
+  .rowhint:empty { display: none; }
+  .rowhint.known { color: var(--edge-confirmed); }
+  /* fixed @ prefix inside handle inputs */
+  .at-field { position: relative; }
+  .at-field .at-sign {
+    position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); pointer-events: none; font-size: 13.5px; line-height: 1;
+  }
+  .at-field > input { padding-left: 26px; width: 100%; }
+  .addrow {
+    align-self: flex-start; font-family: inherit; font-size: 12.5px; font-weight: 600;
+    color: var(--node-claimed); background: none; border: none; cursor: pointer; padding: 2px 0;
+  }
+  .consent { display: flex; gap: 9px; font-size: 12.5px; color: var(--ink-2); line-height: 1.45; align-items: flex-start; }
+  .consent input { margin-top: 2px; accent-color: var(--node-claimed); }
+  .form-error { font-size: 12.5px; color: var(--critical); display: none; }
+  .form-error.show { display: block; }
+  .modal .m-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .about-body { font-size: 13px; color: var(--ink-2); line-height: 1.6; display: flex; flex-direction: column; gap: 10px; }
+  .about-body strong { color: var(--ink); }
+  .about-body ul { margin: 0 0 0 20px; padding: 0; }
+  .about-body li { margin: 2px 0; }
+
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--page); font-size: 13px;
+    padding: 9px 16px; border-radius: 999px; z-index: 120;
+    opacity: 0; transition: opacity 0.25s; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .toast.show { opacity: 1; }
+
+  .legend .lg-claimed { fill: var(--node-claimed); }
+  .legend .lg-unclaimed { fill: var(--surface-1); stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 3 2.5; }
+  .legend .lg-line { stroke-width: 2; stroke-linecap: round; }
+  .legend .lg-irl { stroke: var(--edge-irl); }
+  .legend .lg-p2irl { stroke: var(--edge-p2irl); }
+  .legend .lg-online { stroke: var(--edge-online); }
+  .legend .lg-p2only { stroke: var(--edge-p2only); }
+  .legend .lg-oneway { stroke: var(--edge-p2only); stroke-dasharray: 4 3; }
+  .legend .divider { grid-column: 1 / -1; border-top: 1px solid var(--border); margin: 2px 0; }
+  .legend-toggle {
+    grid-column: 1 / -1; display: flex; align-items: center; gap: 7px;
+    cursor: pointer; padding-top: 2px; color: var(--ink-2); user-select: none;
+  }
+  .legend-toggle input { accent-color: var(--node-claimed); margin: 0; cursor: pointer; }
+
+  /* mobile-only elements, hidden on desktop */
+  .keytoggle, .fab, .sheet-handle, .legend-stats { display: none; }
+
+  @media (max-width: 640px) {
+    header { padding: 8px 10px 8px 14px; gap: 8px; flex-wrap: nowrap; }
+    .brand { min-width: 0; flex: none; margin-right: 10px; }
+    .brand h1 { font-size: 14px; white-space: nowrap; }
+    .brand .sub { display: none; }
+    .stats { display: none; }
+    #modeChip { display: none; }
+    #btnAddSelf { display: none; }
+    .spacer { display: none; }
+    .searchwrap { flex: 1 1 0; min-width: 0; }
+    .searchwrap input { width: 100%; font-size: 16px; padding: 9px 12px; }
+    button.icon { width: 40px; height: 40px; flex: none; }
+    header .searchwrap input, header button.btn, header button.icon { height: 40px; }
+    header button.icon { width: 40px; }
+    #stage { height: calc(100% - 57px); }
+
+    /* legend collapses behind a "map key" chip */
+    .keytoggle { display: block; position: absolute; top: 12px; left: 12px; z-index: 6; font-family: inherit; font-size: 12px; padding: 7px 12px; cursor: pointer; }
+    .legend { display: none; top: 48px; left: 12px; max-width: 250px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .legend.open { display: grid; }
+    .legend-stats { display: block; grid-column: 1 / -1; color: var(--muted); font-size: 10.5px; padding-top: 2px; }
+
+    /* floating add-yourself button */
+    .fab {
+      display: block; position: absolute; right: 14px;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      z-index: 8; font-family: inherit; font-size: 15px; font-weight: 700;
+      background: var(--node-claimed); color: #fff; border: none;
+      border-radius: 999px; padding: 14px 20px; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+    }
+    .fab:active { filter: brightness(1.1); }
+    .zoomctrl { bottom: calc(18px + env(safe-area-inset-bottom)); }
+
+    /* node panel becomes a bottom sheet */
+    #panel {
+      position: fixed; top: auto; left: 0; right: 0; bottom: 0; width: auto;
+      max-height: 62vh; border-radius: 16px 16px 0 0; border-bottom: none;
+      padding: 6px 18px calc(16px + env(safe-area-inset-bottom));
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.25); z-index: 30;
+    }
+    .sheet-handle {
+      display: block; flex: none; width: 42px; height: 5px; border-radius: 3px;
+      background: var(--baseline); background-clip: content-box;
+      box-sizing: content-box; padding: 8px 44px; margin: 0 auto;
+      cursor: grab; touch-action: none;
+    }
+    #panel .p-close { top: 16px; right: 14px; width: 36px; height: 36px; }
+    #panel h2 { font-size: 18px; }
+    #panel .p-actions { padding-bottom: 2px; }
+    #panel .p-actions button { padding: 13px 14px; font-size: 14.5px; }
+    .conn-row { padding: 10px 8px; font-size: 14px; }
+
+    /* modals become bottom sheets */
+    .scrim { align-items: flex-end; padding: 0; }
+    .modal {
+      max-width: none; border-radius: 16px 16px 0 0;
+      padding: 18px 18px calc(16px + env(safe-area-inset-bottom));
+      max-height: 90vh; gap: 12px;
+    }
+    .modal h2 { font-size: 16px; }
+    .modal p.help { font-size: 12px; }
+    /* 16px inputs stop iOS Safari from auto-zooming on focus */
+    .field input, .field select, .conn-input-row input, .conn-input-row select { font-size: 16px; }
+    .conn-input-row { grid-template-columns: 1fr 40px; padding: 10px; }
+    .conn-input-row .at-field { grid-column: 1; grid-row: 1; }
+    .conn-input-row .ci-rel { grid-column: 1; grid-row: 2; }
+    .conn-input-row .rm { grid-column: 2; grid-row: 1 / 3; align-self: center; width: 40px; height: 42px; }
+    .conn-input-row .rowhint { grid-column: 1; grid-row: 3; }
+    .at-field .at-sign { font-size: 16px; left: 12px; }
+    .at-field > input { padding-left: 30px; }
+    .addrow { padding: 8px 0; }
+    .consent { font-size: 13.5px; }
+    .modal .m-actions button { flex: 1; padding: 13px 14px; font-size: 15px; }
+    .search-results button { padding: 11px 12px; font-size: 14px; }
+    .toast { bottom: calc(84px + env(safe-area-inset-bottom)); max-width: 90vw; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+      <g stroke-linecap="round" stroke-width="7">
+        <line x1="28" y1="37" x2="14" y2="15" stroke="var(--edge-irl)"/>
+        <line x1="28" y1="37" x2="52" y2="21" stroke="var(--edge-p2irl)"/>
+        <line x1="28" y1="37" x2="46" y2="54" stroke="var(--edge-online)"/>
+      </g>
+      <circle cx="28" cy="37" r="8" fill="var(--ink)"/>
+      <circle cx="14" cy="15" r="6.5" fill="var(--ink)"/>
+      <circle cx="52" cy="21" r="6.5" fill="var(--ink)"/>
+      <circle cx="46" cy="54" r="6.5" fill="var(--ink)"/>
+    </svg>
+    <div class="brand-text">
+      <h1>p2irl</h1>
+      <span class="sub">who do u know here</span>
+    </div>
+  </div>
+  <span class="stats" id="stats"></span>
+  <span class="chip demo" id="modeChip" title="">demo data</span>
+  <div class="spacer"></div>
+  <div class="searchwrap">
+    <input id="search" type="text" placeholder="find a handle…" autocomplete="off" spellcheck="false">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <button class="btn primary" id="btnAddSelf">add yourself</button>
+  <button class="icon" id="btnAbout" title="about">?</button>
+  <button class="icon" id="btnTheme" title="Theme: auto">◐</button>
+</header>
+
+<div id="stage">
+  <svg id="graph" role="img" aria-label="Network graph of posting2 users and their real-life connections"></svg>
+
+  <button class="chip keytoggle" id="legendToggle" aria-expanded="false" aria-controls="legend">map key</button>
+
+  <div class="legend" id="legend">
+    <svg width="26" height="14"><circle cx="13" cy="7" r="6" class="lg-claimed"></circle></svg>
+    <span>claimed (added themselves)</span>
+    <svg width="26" height="14"><circle cx="13" cy="7" r="6" class="lg-unclaimed"></circle></svg>
+    <span>unconfirmed (added by others)</span>
+    <div class="divider"></div>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-irl"></line></svg>
+    <span>IRL</span>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-online"></line></svg>
+    <span>online then posting2</span>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2irl"></line></svg>
+    <span>posting2 then IRL</span>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2only"></line></svg>
+    <span>posting2 only</span>
+    <div class="divider"></div>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-oneway"></line></svg>
+    <span>dashed until both report it</span>
+    <label class="legend-toggle"><input type="checkbox" id="toggleUnconfirmed" checked><span>show unconfirmed connections</span></label>
+    <div class="legend-stats" id="legendStats"></div>
+  </div>
+
+  <div class="zoomctrl">
+    <button class="icon" id="zoomIn" title="Zoom in">+</button>
+    <button class="icon" id="zoomOut" title="Zoom out">−</button>
+    <button class="icon" id="zoomFit" title="Fit to view">⤢</button>
+  </div>
+
+  <button class="fab" id="fabAdd">+ add yourself</button>
+
+  <aside id="panel" aria-live="polite">
+    <div class="sheet-handle" id="sheetHandle" aria-hidden="true"></div>
+    <button class="icon p-close" id="panelClose" title="Close">×</button>
+    <h2 id="pHandle"></h2>
+    <span class="status-chip" id="pStatus"></span>
+    <div class="p-meta" id="pMeta"></div>
+    <div class="conns">
+      <h3>Connections</h3>
+      <div id="pConns"></div>
+    </div>
+    <div class="p-actions">
+      <button class="btn" id="btnClaim" style="display:none">this is me — claim this node</button>
+      <button class="btn primary" id="btnAddConn">add a connection</button>
+    </div>
+  </aside>
+</div>
+
+<div id="tooltip"></div>
+<div class="toast" id="toast"></div>
+
+<!-- Add yourself modal -->
+<div class="scrim" id="scrimSelf">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="selfTitle">
+    <h2 id="selfTitle">Add yourself to the map</h2>
+    <p class="help">Type handles <strong>exactly</strong> as they appear on posting2 — a typo creates a duplicate person.<br>Then pick how you know each person.</p>
+    <div class="field">
+      <label for="selfHandle">Your posting2 handle</label>
+      <div class="at-field"><span class="at-sign">@</span><input id="selfHandle" type="text" placeholder="yourhandle" spellcheck="false"></div>
+      <div class="hint" id="selfHandleHint"></div>
+    </div>
+    <div class="field">
+      <label>People you know</label>
+      <div class="conn-inputs" id="selfConnRows"></div>
+      <button class="addrow" id="selfAddRow">+ add another person</button>
+    </div>
+    <label class="consent">
+      <input type="checkbox" id="selfConsent">
+      <span>These connections are real, the labels are accurate, and I'm okay with them being publicly visible on this map.</span>
+    </label>
+    <div class="form-error" id="selfError"></div>
+    <div class="m-actions">
+      <button class="btn" id="selfCancel">cancel</button>
+      <button class="btn primary" id="selfSubmit">add me to the map</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add connection modal -->
+<div class="scrim" id="scrimConn">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="connTitle">
+    <h2 id="connTitle">Add a connection</h2>
+    <p class="help">You can only add connections that include <strong>you</strong>. It shows as "reported by one" until the other person confirms it from their side.</p>
+    <div class="field">
+      <label for="connFrom">Your handle</label>
+      <div class="at-field"><span class="at-sign">@</span><input id="connFrom" type="text" placeholder="yourhandle" spellcheck="false"></div>
+      <div class="hint" id="connFromHint"></div>
+    </div>
+    <div class="field">
+      <label for="connTo">Who you know</label>
+      <div class="at-field"><span class="at-sign">@</span><input id="connTo" type="text" placeholder="theirhandle" spellcheck="false"></div>
+      <div class="hint" id="connToHint"></div>
+    </div>
+    <div class="field">
+      <label for="connRel">How do you know each other?</label>
+      <select id="connRel"></select>
+    </div>
+    <label class="consent">
+      <input type="checkbox" id="connConsent">
+      <span>This connection is real and I'm okay with it being publicly visible.</span>
+    </label>
+    <div class="form-error" id="connError"></div>
+    <div class="m-actions">
+      <button class="btn" id="connCancel">cancel</button>
+      <button class="btn primary" id="connSubmit">add connection</button>
+    </div>
+  </div>
+</div>
+
+<!-- About modal -->
+<div class="scrim" id="scrimAbout">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <h2 id="aboutTitle">About this map</h2>
+    <div class="about-body">
+      <p><strong>p2irl</strong> is a crowdsourced map of how posting2 users know each other.</p>
+      <p><strong>How it works:</strong> add yourself with your exact posting2 handle and list the people you know. Each connection gets a color for how it formed:</p>
+      <ul>
+        <li><strong>IRL</strong> — you know each other from real life</li>
+        <li><strong>online then posting2</strong> — knew each other online somewhere else first</li>
+        <li><strong>posting2 then IRL</strong> — met on the app, then in person</li>
+        <li><strong>posting2 only</strong> — so far, anyway</li>
+      </ul>
+      <p>Anyone you mention who hasn't joined yet appears as a dashed <strong>unconfirmed</strong> node until they claim it, and a line stays dashed until <strong>both</strong> people report it.</p>
+      <p><strong>Ground rules:</strong> handles only — no real names, no locations, no private info. Only add connections that actually exist, labeled honestly. Exact spelling matters; there's no directory lookup, so typos create duplicates.</p>
+      <p><strong>Want off the map?</strong> Message <strong>@dang</strong> on posting2 and your node will be removed, no questions asked.</p>
+      <p id="aboutMode" style="color:var(--muted);font-size:12px"></p>
+    </div>
+    <div class="m-actions">
+      <button class="btn primary" id="aboutClose">got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ================= config =================
+   To go live on Cloudflare: create a D1 database (run d1-schema.sql),
+   deploy cloudflare-worker.js with the DB binding, then set API_URL to
+   the worker's URL. If the worker also serves this file as a static
+   asset, set API_URL to "" and it will use the page's own origin.
+   Demo mode (sample data, no persistence) is used when no API is
+   configured or reachable. */
+const CONFIG = {
+  API_URL: "https://p2irl.at-dang.workers.dev",             // e.g. "https://p2irl.yourname.workers.dev"
+  API_SAME_ORIGIN: false,  // true when the worker serves this page itself
+};
+
+/* Connection provenance — knew-before-posting2 first, posting2-native last */
+const RELATIONS = [
+  { value: "irl",          label: "IRL",                  desc: "know each other from real life" },
+  { value: "online-first", label: "online then posting2", desc: "knew each other online before posting2" },
+  { value: "posting2-irl", label: "posting2 then IRL",    desc: "met on posting2, then met in person" },
+  { value: "posting2",     label: "posting2 only",        desc: "know each other only on posting2 (so far)" },
+];
+const RELMAP = new Map(RELATIONS.map(r => [r.value, r]));
+function relInfo(v) { return RELMAP.get(v) || { value: v, label: v, desc: "" }; }
+const EDGE_COLORS = {
+  "irl": "var(--edge-irl)",
+  "posting2-irl": "var(--edge-p2irl)",
+  "online-first": "var(--edge-online)",
+  "posting2": "var(--edge-p2only)",
+};
+function edgeColor(v) { return EDGE_COLORS[v] || "var(--edge-p2only)"; }
+
+/* ================= utils ================= */
+function normHandle(raw) {
+  return String(raw || "").trim().replace(/^@+/, "").toLowerCase();
+}
+function validHandle(h) {
+  return /^[a-z0-9._-]{2,32}$/.test(h);
+}
+function pairKey(a, b) {
+  return [a, b].sort().join("||");
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* ================= demo seed data =================
+   Shaped exactly like backend rows so the same pipeline handles both. */
+const SEED_PEOPLE = [
+  { handle:"marek",        claimed:true },
+  { handle:"ninja",        claimed:true },
+  { handle:"izzy",         claimed:true },
+  { handle:"ema",          claimed:true },
+  { handle:"birthday",     claimed:true },
+  { handle:"grave",        claimed:true },
+  { handle:"coolgirl",     claimed:true },
+  { handle:"dirtbag",      claimed:true },
+  { handle:"squisher",     claimed:true },
+  { handle:"lorn",         claimed:true },
+  { handle:"blastangel",   claimed:true },
+  { handle:"omegle",       claimed:true },
+  { handle:"nimrod",       claimed:true },
+  { handle:"schnitzel",    claimed:true },
+  { handle:"covid",        claimed:true },
+  { handle:"linguistics",  claimed:true },
+  { handle:"lizaminnelli", claimed:true },
+  { handle:"johnlennon",   claimed:false },
+  { handle:"pork",         claimed:false },
+  { handle:"bucket",       claimed:false },
+  { handle:"fun.",         claimed:false },
+  { handle:"taylor",       claimed:false },
+];
+const SEED_LINKS = [
+  // IRL crew #1
+  { a:"marek", b:"ninja", relation:"irl", added_by:"marek" },
+  { a:"ninja", b:"marek", relation:"irl", added_by:"ninja" },
+  { a:"marek", b:"izzy", relation:"irl", added_by:"marek" },
+  { a:"izzy", b:"marek", relation:"irl", added_by:"izzy" },
+  { a:"ninja", b:"izzy", relation:"irl", added_by:"ninja" },
+  { a:"izzy", b:"ema", relation:"irl", added_by:"izzy" },
+  { a:"ema", b:"izzy", relation:"irl", added_by:"ema" },
+  { a:"ema", b:"birthday", relation:"irl", added_by:"ema" },
+  { a:"birthday", b:"ema", relation:"irl", added_by:"birthday" },
+  { a:"marek", b:"grave", relation:"posting2-irl", added_by:"marek" },
+  { a:"birthday", b:"grave", relation:"irl", added_by:"grave" },
+  { a:"marek", b:"johnlennon", relation:"posting2-irl", added_by:"marek" },
+  // IRL crew #2
+  { a:"coolgirl", b:"dirtbag", relation:"irl", added_by:"coolgirl" },
+  { a:"dirtbag", b:"coolgirl", relation:"irl", added_by:"dirtbag" },
+  { a:"coolgirl", b:"squisher", relation:"irl", added_by:"coolgirl" },
+  { a:"squisher", b:"coolgirl", relation:"irl", added_by:"squisher" },
+  { a:"dirtbag", b:"squisher", relation:"irl", added_by:"dirtbag" },
+  { a:"squisher", b:"lorn", relation:"posting2-irl", added_by:"squisher" },
+  { a:"lorn", b:"squisher", relation:"posting2-irl", added_by:"lorn" },
+  { a:"coolgirl", b:"blastangel", relation:"online-first", added_by:"coolgirl" },
+  { a:"dirtbag", b:"pork", relation:"irl", added_by:"dirtbag" },
+  { a:"coolgirl", b:"fun.", relation:"posting2", added_by:"coolgirl" },
+  // internet-era friends
+  { a:"omegle", b:"nimrod", relation:"online-first", added_by:"omegle" },
+  { a:"nimrod", b:"omegle", relation:"online-first", added_by:"nimrod" },
+  { a:"omegle", b:"schnitzel", relation:"online-first", added_by:"omegle" },
+  { a:"nimrod", b:"covid", relation:"posting2", added_by:"nimrod" },
+  { a:"covid", b:"nimrod", relation:"posting2", added_by:"covid" },
+  { a:"omegle", b:"covid", relation:"posting2", added_by:"omegle" },
+  { a:"schnitzel", b:"linguistics", relation:"posting2-irl", added_by:"schnitzel" },
+  { a:"linguistics", b:"bucket", relation:"online-first", added_by:"linguistics" },
+  // bridges between clusters
+  { a:"izzy", b:"coolgirl", relation:"posting2-irl", added_by:"izzy" },
+  { a:"coolgirl", b:"izzy", relation:"posting2-irl", added_by:"coolgirl" },
+  { a:"ninja", b:"omegle", relation:"online-first", added_by:"ninja" },
+  { a:"omegle", b:"ninja", relation:"online-first", added_by:"omegle" },
+  { a:"squisher", b:"schnitzel", relation:"posting2", added_by:"squisher" },
+  { a:"schnitzel", b:"squisher", relation:"posting2", added_by:"schnitzel" },
+  { a:"ema", b:"lizaminnelli", relation:"posting2", added_by:"ema" },
+  { a:"grave", b:"taylor", relation:"irl", added_by:"grave" },
+];
+
+/* ================= stores ================= */
+class DemoStore {
+  constructor() {
+    this.people = SEED_PEOPLE.map(p => ({...p}));
+    this.links = SEED_LINKS.map(l => ({...l}));
+    this.live = false;
+  }
+  async load() { return { people: this.people, links: this.links }; }
+  async addPerson({ handle, claimed }) {
+    const existing = this.people.find(p => p.handle === handle);
+    if (existing) {
+      if (claimed) existing.claimed = true;
+    } else {
+      this.people.push({ handle, claimed: !!claimed });
+    }
+  }
+  async addLink({ a, b, relation, added_by }) {
+    const dup = this.links.find(l => pairKey(l.a, l.b) === pairKey(a, b) && l.added_by === added_by);
+    if (dup) { dup.relation = relation; return; }
+    this.links.push({ a, b, relation, added_by });
+  }
+}
+
+/* Talks to the Cloudflare Worker in cloudflare-worker.js (D1-backed). */
+class ApiStore {
+  constructor(url) {
+    this.url = (url || "").replace(/\/+$/, "");
+    this.live = true;
+  }
+  async post(path, body) {
+    const res = await fetch(this.url + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error("save failed: " + path);
+  }
+  async load() {
+    const res = await fetch(this.url + "/graph");
+    if (!res.ok) throw new Error("backend load failed");
+    return await res.json();
+  }
+  async addPerson({ handle, claimed }) {
+    await this.post("/people", { handle, claimed: !!claimed });
+  }
+  async addLink({ a, b, relation, added_by }) {
+    await this.post("/links", { a, b, relation, added_by });
+  }
+}
+
+const store = (CONFIG.API_URL || CONFIG.API_SAME_ORIGIN)
+  ? new ApiStore(CONFIG.API_URL)
+  : new DemoStore();
+
+/* ================= state ================= */
+let nodes = [];        // {id, name, claimed, deg, x, y, ...}
+let links = [];        // {source, target, relation, confirmed, reporters:[]}
+let nodeByid = new Map();
+let selected = null;   // handle of selected node
+let me = null;         // handle of the viewer, once they add themselves (in-memory only)
+let showUnconfirmed = true;   // legend toggle: include one-sided (dashed) edges
+function visibleLinks() { return showUnconfirmed ? links : links.filter(l => l.confirmed); }
+const posCache = new Map();  // handle -> {x, y} so re-renders don't scatter the graph
+
+/* ================= graph build ================= */
+function buildGraph(people, rawLinks) {
+  const pmap = new Map();
+  for (const p of people) {
+    const h = normHandle(p.handle);
+    if (!h) continue;
+    const prev = pmap.get(h);
+    pmap.set(h, {
+      id: h,
+      claimed: !!p.claimed || (prev && prev.claimed) || false,
+    });
+  }
+  // group link rows by unordered pair
+  const groups = new Map();
+  for (const l of rawLinks) {
+    const a = normHandle(l.a), b = normHandle(l.b);
+    if (!a || !b || a === b) continue;
+    const k = pairKey(a, b);
+    if (!groups.has(k)) groups.set(k, { a, b, relations: [], reporters: new Set() });
+    const g = groups.get(k);
+    if (l.relation) g.relations.push(l.relation);
+    if (l.added_by) g.reporters.add(normHandle(l.added_by));
+    // anyone mentioned in a link gets at least an unconfirmed node
+    for (const h of [a, b]) {
+      if (!pmap.has(h)) pmap.set(h, { id: h, claimed: false });
+    }
+  }
+  const newLinks = [];
+  for (const g of groups.values()) {
+    const confirmed = g.reporters.has(g.a) && g.reporters.has(g.b);
+    newLinks.push({
+      source: g.a, target: g.b,
+      relation: g.relations[g.relations.length - 1] || "posting2",
+      confirmed,
+      reporters: [...g.reporters],
+    });
+  }
+  const newNodes = [...pmap.values()];
+  const degree = new Map();
+  for (const l of newLinks) {
+    degree.set(l.source, (degree.get(l.source) || 0) + 1);
+    degree.set(l.target, (degree.get(l.target) || 0) + 1);
+  }
+  for (const n of newNodes) {
+    n.deg = degree.get(n.id) || 0;
+    const cached = posCache.get(n.id);
+    if (cached) { n.x = cached.x; n.y = cached.y; }
+  }
+  // place brand-new nodes near a neighbor instead of the origin
+  for (const n of newNodes) {
+    if (n.x !== undefined) continue;
+    const nb = newLinks.find(l => l.source === n.id || l.target === n.id);
+    if (nb) {
+      const otherId = nb.source === n.id ? nb.target : nb.source;
+      const other = newNodes.find(m => m.id === otherId && m.x !== undefined);
+      if (other) {
+        n.x = other.x + (Math.random() - 0.5) * 60;
+        n.y = other.y + (Math.random() - 0.5) * 60;
+      }
+    }
+  }
+  nodes = newNodes;
+  links = newLinks;
+  nodeByid = new Map(nodes.map(n => [n.id, n]));
+}
+
+/* ================= rendering ================= */
+const svg = d3.select("#graph");
+const gRoot = svg.append("g");
+const gLinks = gRoot.append("g");
+const gNodes = gRoot.append("g");
+const gLabels = gRoot.append("g");
+const tooltip = document.getElementById("tooltip");
+const IS_TOUCH = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+function isMobile() { return window.innerWidth <= 640; }
+let edgeTipTimer = null;
+
+let W = 800, H = 600;
+function measure() {
+  const r = document.getElementById("stage").getBoundingClientRect();
+  W = Math.max(300, r.width);
+  H = Math.max(300, r.height);
+  svg.attr("viewBox", `0 0 ${W} ${H}`);
+}
+
+const zoom = d3.zoom()
+  .scaleExtent([0.2, 5])
+  .on("zoom", (ev) => gRoot.attr("transform", ev.transform));
+svg.call(zoom).on("dblclick.zoom", null);
+
+let sim = null;
+
+function nodeRadius(d) {
+  return 6 + Math.min(10, d.deg * 1.4);
+}
+
+function css(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+
+function render() {
+  measure();
+
+  const vlinks = visibleLinks();
+
+  if (sim) sim.stop();
+  sim = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(vlinks).id(d => d.id)
+      .distance(l => l.confirmed ? 62 : 88)
+      .strength(l => l.confirmed ? 0.5 : 0.22))
+    .force("charge", d3.forceManyBody().strength(-300))
+    .force("collide", d3.forceCollide().radius(d => nodeRadius(d) + 12))
+    .force("x", d3.forceX(W / 2).strength(H > W ? 0.10 : 0.05))
+    .force("y", d3.forceY(H / 2).strength(H > W ? 0.035 : 0.06));
+
+  /* --- links: visible line + fat invisible hit line --- */
+  const linkSel = gLinks.selectAll("g.linkg")
+    .data(vlinks, l => pairKey(l.source.id || l.source, l.target.id || l.target));
+  linkSel.exit().remove();
+  const linkEnter = linkSel.enter().append("g").attr("class", "linkg");
+  linkEnter.append("line").attr("class", "vis");
+  linkEnter.append("line").attr("class", "hit")
+    .attr("stroke", "transparent").attr("stroke-width", 12);
+  const linkAll = linkEnter.merge(linkSel);
+  linkAll.select("line.vis")
+    .attr("stroke", l => edgeColor(l.relation))
+    .attr("stroke-width", l => l.confirmed ? 2 : 1.5)
+    .attr("stroke-dasharray", l => l.confirmed ? null : "4 4")
+    .attr("stroke-linecap", "round")
+    .attr("opacity", 0.9);
+  function edgeTipHTML(l) {
+    const a = l.source.id, b = l.target.id;
+    const status = l.confirmed
+      ? "confirmed by both"
+      : "reported by @" + esc(l.reporters[0] || "?") + " — not yet confirmed";
+    const ri = relInfo(l.relation);
+    return `<span class="t-handle">@${esc(a)} ↔ @${esc(b)}</span><br>${esc(ri.label)} — ${esc(ri.desc)}<br><span class="t-sub">${status}</span>`;
+  }
+  linkAll.select("line.hit")
+    .attr("stroke-width", IS_TOUCH ? 22 : 12)
+    .on("mousemove", (ev, l) => showTooltip(ev, edgeTipHTML(l)))
+    .on("mouseleave", hideTooltip)
+    .on("click", (ev, l) => {
+      // tap support: edges have no hover on touch screens
+      ev.stopPropagation();
+      showTooltip(ev, edgeTipHTML(l));
+      clearTimeout(edgeTipTimer);
+      edgeTipTimer = setTimeout(hideTooltip, 3500);
+    });
+
+  /* --- nodes: group with hit halo + circle --- */
+  const nodeSel = gNodes.selectAll("g.nodeg").data(nodes, d => d.id);
+  nodeSel.exit().each(d => posCache.delete(d.id)).remove();
+  const nodeEnter = nodeSel.enter().append("g").attr("class", "nodeg")
+    .style("cursor", "pointer");
+  nodeEnter.append("circle").attr("class", "halo").attr("fill", "transparent");
+  nodeEnter.append("circle").attr("class", "dot");
+  const nodeAll = nodeEnter.merge(nodeSel);
+  nodeAll.select("circle.halo").attr("r", d => nodeRadius(d) + 9);
+  nodeAll.select("circle.dot")
+    .attr("r", d => nodeRadius(d))
+    .attr("fill", d => d.claimed ? "var(--node-claimed)" : "var(--surface-1)")
+    .attr("stroke", d => d.claimed ? "var(--surface-1)" : "var(--muted)")
+    .attr("stroke-width", d => d.claimed ? 1.5 : 1.8)
+    .attr("stroke-dasharray", d => d.claimed ? null : "3 2.5");
+  nodeAll
+    .on("mousemove", (ev, d) => {
+      const st = d.claimed ? "claimed" : "unconfirmed — added by others";
+      showTooltip(ev, `<span class="t-handle">@${esc(d.id)}</span><br><span class="t-sub">${d.deg} connection${d.deg === 1 ? "" : "s"} · ${st}</span>`);
+    })
+    .on("mouseleave", hideTooltip)
+    .on("click", (ev, d) => { ev.stopPropagation(); selectNode(d.id); })
+    .call(d3.drag()
+      .on("start", (ev, d) => {
+        if (!ev.active) sim.alphaTarget(0.25).restart();
+        d.fx = d.x; d.fy = d.y;
+      })
+      .on("drag", (ev, d) => { d.fx = ev.x; d.fy = ev.y; })
+      .on("end", (ev, d) => {
+        if (!ev.active) sim.alphaTarget(0);
+        d.fx = null; d.fy = null;
+      }));
+
+  /* --- labels --- */
+  const labelSel = gLabels.selectAll("text.nlabel").data(nodes, d => d.id);
+  labelSel.exit().remove();
+  const labelEnter = labelSel.enter().append("text").attr("class", "nlabel")
+    .attr("text-anchor", "middle")
+    .attr("font-size", 10.5)
+    .attr("font-family", "system-ui, -apple-system, 'Segoe UI', sans-serif")
+    .style("pointer-events", "none")
+    .style("user-select", "none");
+  const labelAll = labelEnter.merge(labelSel);
+  labelAll
+    .text(d => "@" + d.id)
+    .attr("fill", "var(--ink-2)");
+
+  sim.on("tick", () => {
+    linkAll.select("line.vis")
+      .attr("x1", l => l.source.x).attr("y1", l => l.source.y)
+      .attr("x2", l => l.target.x).attr("y2", l => l.target.y);
+    linkAll.select("line.hit")
+      .attr("x1", l => l.source.x).attr("y1", l => l.source.y)
+      .attr("x2", l => l.target.x).attr("y2", l => l.target.y);
+    nodeAll.attr("transform", d => `translate(${d.x},${d.y})`);
+    labelAll.attr("x", d => d.x).attr("y", d => d.y + nodeRadius(d) + 13);
+    for (const n of nodes) posCache.set(n.id, { x: n.x, y: n.y });
+  });
+
+  applyHighlight();
+  updateStats();
+}
+
+function applyHighlight() {
+  const neighbors = new Set();
+  if (selected) {
+    neighbors.add(selected);
+    for (const l of visibleLinks()) {
+      const a = l.source.id || l.source, b = l.target.id || l.target;
+      if (a === selected) neighbors.add(b);
+      if (b === selected) neighbors.add(a);
+    }
+  }
+  gNodes.selectAll("g.nodeg")
+    .attr("opacity", d => !selected || neighbors.has(d.id) ? 1 : 0.16);
+  gNodes.selectAll("g.nodeg circle.dot")
+    .attr("stroke", d => d.id === selected ? "var(--ink)" : (d.claimed ? "var(--surface-1)" : "var(--muted)"))
+    .attr("stroke-width", d => d.id === selected ? 2.5 : (d.claimed ? 1.5 : 1.8));
+  gLinks.selectAll("g.linkg")
+    .attr("opacity", l => {
+      if (!selected) return 1;
+      const a = l.source.id || l.source, b = l.target.id || l.target;
+      return (a === selected || b === selected) ? 1 : 0.08;
+    });
+  gLabels.selectAll("text.nlabel")
+    .attr("display", d => {
+      if (selected) return neighbors.has(d.id) ? null : "none";
+      return d.deg >= 3 ? null : "none";
+    })
+    .attr("font-weight", d => d.id === selected ? 700 : 400)
+    .attr("fill", d => d.id === selected ? "var(--ink)" : "var(--ink-2)");
+}
+
+function showTooltip(ev, html) {
+  tooltip.innerHTML = html;
+  tooltip.style.display = "block";
+  const pad = 14;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  const r = tooltip.getBoundingClientRect();
+  if (x + r.width > window.innerWidth - 8) x = ev.clientX - r.width - pad;
+  if (y + r.height > window.innerHeight - 8) y = ev.clientY - r.height - pad;
+  tooltip.style.left = x + "px";
+  tooltip.style.top = y + "px";
+}
+function hideTooltip() { tooltip.style.display = "none"; }
+
+svg.on("click", () => selectNode(null));
+
+/* ================= data refresh ================= */
+async function refresh({ reheat = true } = {}) {
+  const { people, links: rawLinks } = await store.load();
+  buildGraph(people, rawLinks);
+  render();
+  if (reheat && sim) sim.alpha(0.6).restart();
+  if (selected && !nodeByid.has(selected)) selectNode(null);
+  else if (selected) showPanel(selected);
+}
+
+/* ================= header / stats ================= */
+function updateStats() {
+  const claimed = nodes.filter(n => n.claimed).length;
+  const pct = nodes.length ? Math.round(100 * claimed / nodes.length) : 0;
+  const met = links.filter(l => l.relation === "irl" || l.relation === "posting2-irl").length;
+  const mp = links.length ? Math.round(100 * met / links.length) : 0;
+  const text = `${nodes.length} people · ${links.length} connections · ${mp}% have met IRL · ${pct}% claimed`;
+  document.getElementById("stats").textContent = text;
+  document.getElementById("legendStats").textContent = text + (store.live ? "" : " · demo data");
+}
+
+const modeChip = document.getElementById("modeChip");
+if (store.live) {
+  modeChip.textContent = "live";
+  modeChip.classList.remove("demo"); modeChip.classList.add("live");
+  modeChip.title = "Connected to the shared community backend — submissions are saved for everyone.";
+} else {
+  modeChip.textContent = "demo data";
+  modeChip.title = "Sample data. Submissions work but only last for this visit — connect a backend (see setup guide) to make it shared and permanent.";
+}
+document.getElementById("aboutMode").textContent = store.live
+  ? "This copy is connected to the shared community backend — everything you add is visible to everyone."
+  : "This copy is running on demo data. Anything you add works, but resets on reload — the shared backend isn't connected yet.";
+
+/* ================= toast ================= */
+let toastTimer = null;
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+/* ================= selection & panel ================= */
+function selectNode(handle) {
+  selected = handle;
+  hideTooltip();
+  if (handle) showPanel(handle);
+  else document.getElementById("panel").classList.remove("open");
+  applyHighlight();
+  // on phones the bottom sheet covers the lower half — keep the node in view
+  if (handle && isMobile()) focusNode(handle, { keepScale: true });
+}
+
+function showPanel(handle) {
+  const n = nodeByid.get(handle);
+  if (!n) return;
+  document.getElementById("pHandle").textContent = "@" + n.id;
+  const st = document.getElementById("pStatus");
+  st.textContent = n.claimed ? "claimed" : "unconfirmed · added by others";
+  st.className = "status-chip " + (n.claimed ? "claimed" : "unclaimed");
+  document.getElementById("pMeta").textContent =
+    `${n.deg} connection${n.deg === 1 ? "" : "s"} on the map`;
+
+  const others = [];
+  for (const l of links) {
+    const a = l.source.id || l.source, b = l.target.id || l.target;
+    if (a === handle) others.push({ other: b, l });
+    else if (b === handle) others.push({ other: a, l });
+  }
+  others.sort((x, y) => (y.l.confirmed - x.l.confirmed) || x.other.localeCompare(y.other));
+  const wrap = document.getElementById("pConns");
+  wrap.innerHTML = "";
+  if (!others.length) {
+    const d = document.createElement("div");
+    d.style.cssText = "font-size:12.5px;color:var(--muted)";
+    d.textContent = "No connections yet.";
+    wrap.appendChild(d);
+  }
+  for (const { other, l } of others) {
+    const btn = document.createElement("button");
+    btn.className = "conn-row";
+    btn.innerHTML =
+      `<span class="conn-dot ${l.confirmed ? "confirmed" : "oneway"}" title="${l.confirmed ? "confirmed by both" : "reported by one side"}"></span>` +
+      `<span>@${esc(other)}</span><span class="c-rel">${esc(relInfo(l.relation).label)}${l.confirmed ? " ✓" : ""}</span>`;
+    btn.addEventListener("click", () => { selectNode(other); focusNode(other); });
+    wrap.appendChild(btn);
+  }
+
+  const claimBtn = document.getElementById("btnClaim");
+  claimBtn.style.display = n.claimed ? "none" : "";
+  document.getElementById("panel").classList.add("open");
+}
+
+document.getElementById("panelClose").addEventListener("click", () => selectNode(null));
+document.getElementById("btnClaim").addEventListener("click", () => {
+  openSelfModal(selected);
+});
+document.getElementById("btnAddConn").addEventListener("click", () => {
+  openConnModal(me || "", selected || "");
+});
+
+function focusNode(handle, { keepScale = false } = {}) {
+  const n = nodeByid.get(handle);
+  if (!n || n.x === undefined) return;
+  const cur = d3.zoomTransform(svg.node());
+  const k = keepScale ? cur.k : 1.4;
+  // when the bottom sheet is open, center in the visible strip above it
+  const sheetOpen = isMobile() && document.getElementById("panel").classList.contains("open");
+  const cy = sheetOpen ? H * 0.3 : H / 2;
+  svg.transition().duration(550).call(
+    zoom.transform,
+    d3.zoomIdentity.translate(W / 2 - k * n.x, cy - k * n.y).scale(k)
+  );
+}
+
+/* ================= search ================= */
+const searchInput = document.getElementById("search");
+const searchResults = document.getElementById("searchResults");
+if (isMobile()) searchInput.placeholder = "search…";
+
+function runSearch() {
+  const q = normHandle(searchInput.value);
+  searchResults.innerHTML = "";
+  if (!q) { searchResults.classList.remove("open"); return; }
+  const matches = nodes
+    .filter(n => n.id.includes(q))
+    .sort((a, b) => (b.deg - a.deg))
+    .slice(0, 8);
+  if (!matches.length) {
+    const d = document.createElement("div");
+    d.style.cssText = "padding:9px 11px;font-size:12.5px;color:var(--muted)";
+    d.textContent = "no one on the map matches";
+    searchResults.appendChild(d);
+  }
+  for (const m of matches) {
+    const b = document.createElement("button");
+    b.innerHTML = `<span>@${esc(m.id)}</span><span class="rname">${m.deg} connection${m.deg === 1 ? "" : "s"}</span>`;
+    b.addEventListener("click", () => {
+      searchResults.classList.remove("open");
+      searchInput.value = "";
+      selectNode(m.id); focusNode(m.id);
+    });
+    searchResults.appendChild(b);
+  }
+  searchResults.classList.add("open");
+}
+searchInput.addEventListener("input", runSearch);
+searchInput.addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter") {
+    const first = searchResults.querySelector("button");
+    if (first) first.click();
+  } else if (ev.key === "Escape") {
+    searchResults.classList.remove("open"); searchInput.blur();
+  }
+});
+document.addEventListener("click", (ev) => {
+  if (!ev.target.closest(".searchwrap")) searchResults.classList.remove("open");
+});
+
+/* ================= modal helpers ================= */
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+for (const id of ["scrimSelf", "scrimConn", "scrimAbout"]) {
+  document.getElementById(id).addEventListener("click", (ev) => {
+    if (ev.target === ev.currentTarget) closeModal(id);
+  });
+}
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape") {
+    for (const id of ["scrimSelf", "scrimConn", "scrimAbout"]) closeModal(id);
+  }
+});
+
+/* the @ prefix lives in the UI, so typed @s are stripped as you type */
+function stripAt(el) {
+  if (el.value.startsWith("@")) el.value = el.value.replace(/^@+/, "");
+}
+
+function handleHint(el, value, { self = false } = {}) {
+  const h = normHandle(value);
+  if (!h) { el.textContent = ""; el.classList.remove("known"); return; }
+  if (!validHandle(h)) {
+    el.textContent = "letters, numbers, . _ - only (2–32 chars)";
+    el.classList.remove("known");
+    return;
+  }
+  const n = nodeByid.get(h);
+  if (n) {
+    el.textContent = n.claimed
+      ? `✓ @${h} is already on the map${self ? " (claimed — adding again just updates it)" : ""}`
+      : `✓ @${h} is on the map, unconfirmed${self ? " — submitting will claim it" : ""}`;
+    el.classList.add("known");
+  } else {
+    el.textContent = `@${h} isn't on the map yet — will be added`;
+    el.classList.remove("known");
+  }
+}
+
+/* ================= add-yourself modal ================= */
+const RELATION_OPTS = RELATIONS.map(r => `<option value="${r.value}">${r.label}</option>`).join("");
+document.getElementById("connRel").innerHTML = RELATION_OPTS;
+
+function connRowTemplate() {
+  const row = document.createElement("div");
+  row.className = "conn-input-row";
+  row.innerHTML =
+    `<div class="at-field"><span class="at-sign">@</span><input type="text" class="ci-handle" placeholder="handle" spellcheck="false"></div>` +
+    `<select class="ci-rel">${RELATION_OPTS}</select>` +
+    `<button class="rm" type="button" title="remove this person">×</button>` +
+    `<div class="rowhint hint"></div>`;
+  row.querySelector(".rm").addEventListener("click", () => row.remove());
+  row.querySelector(".ci-handle").addEventListener("input", (ev) => {
+    stripAt(ev.target);
+    handleHint(row.querySelector(".rowhint"), ev.target.value);
+  });
+  return row;
+}
+
+function openSelfModal(prefillHandle) {
+  const rows = document.getElementById("selfConnRows");
+  rows.innerHTML = "";
+  const initialRows = isMobile() ? 2 : 3;
+  for (let i = 0; i < initialRows; i++) rows.appendChild(connRowTemplate());
+  document.getElementById("selfHandle").value = prefillHandle || "";
+  document.getElementById("selfConsent").checked = false;
+  document.getElementById("selfError").classList.remove("show");
+  handleHint(document.getElementById("selfHandleHint"), prefillHandle || "", { self: true });
+  openModal("scrimSelf");
+  if (prefillHandle) {
+    const firstRow = document.querySelector("#selfConnRows .ci-handle");
+    if (firstRow) firstRow.focus();
+  } else {
+    document.getElementById("selfHandle").focus();
+  }
+}
+document.getElementById("btnAddSelf").addEventListener("click", () => openSelfModal(me || ""));
+document.getElementById("fabAdd").addEventListener("click", () => openSelfModal(me || ""));
+document.getElementById("selfAddRow").addEventListener("click", () => {
+  document.getElementById("selfConnRows").appendChild(connRowTemplate());
+});
+document.getElementById("selfHandle").addEventListener("input", (ev) => {
+  stripAt(ev.target);
+  handleHint(document.getElementById("selfHandleHint"), ev.target.value, { self: true });
+});
+document.getElementById("selfCancel").addEventListener("click", () => closeModal("scrimSelf"));
+
+function showFormError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add("show");
+}
+
+document.getElementById("selfSubmit").addEventListener("click", async () => {
+  const errId = "selfError";
+  document.getElementById(errId).classList.remove("show");
+  const myHandle = normHandle(document.getElementById("selfHandle").value);
+  if (!validHandle(myHandle)) return showFormError(errId, "Enter a valid posting2 handle (letters, numbers, . _ -).");
+  const rows = [...document.querySelectorAll("#selfConnRows .conn-input-row")];
+  const conns = [];
+  for (const row of rows) {
+    const h = normHandle(row.querySelector(".ci-handle").value);
+    if (!h) continue;
+    if (!validHandle(h)) return showFormError(errId, `"@${h}" doesn't look like a valid handle.`);
+    if (h === myHandle) return showFormError(errId, "You can't add a connection to yourself.");
+    conns.push({ handle: h, relation: row.querySelector(".ci-rel").value });
+  }
+  const seen = new Set();
+  for (const c of conns) {
+    if (seen.has(c.handle)) return showFormError(errId, `@${c.handle} is listed twice.`);
+    seen.add(c.handle);
+  }
+  if (!document.getElementById("selfConsent").checked)
+    return showFormError(errId, "Please confirm the ground-rules checkbox first.");
+  const btn = document.getElementById("selfSubmit");
+  btn.disabled = true;
+  try {
+    await store.addPerson({ handle: myHandle, claimed: true });
+    for (const c of conns) {
+      await store.addPerson({ handle: c.handle, claimed: false });
+      await store.addLink({ a: myHandle, b: c.handle, relation: c.relation, added_by: myHandle });
+    }
+    me = myHandle;
+    closeModal("scrimSelf");
+    await refresh();
+    selectNode(myHandle); focusNode(myHandle);
+    toast(store.live ? "You're on the map — saved for everyone." : "You're on the map (demo — resets on reload).");
+  } catch (e) {
+    showFormError(errId, "Couldn't save — the backend didn't respond. Try again in a moment.");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* ================= add-connection modal ================= */
+function openConnModal(from, to) {
+  document.getElementById("connFrom").value = from || "";
+  document.getElementById("connTo").value = to || "";
+  document.getElementById("connConsent").checked = false;
+  document.getElementById("connError").classList.remove("show");
+  handleHint(document.getElementById("connFromHint"), from || "");
+  handleHint(document.getElementById("connToHint"), to || "");
+  openModal("scrimConn");
+  document.getElementById(from ? "connTo" : "connFrom").focus();
+}
+document.getElementById("connFrom").addEventListener("input", (ev) => {
+  stripAt(ev.target);
+  handleHint(document.getElementById("connFromHint"), ev.target.value);
+});
+document.getElementById("connTo").addEventListener("input", (ev) => {
+  stripAt(ev.target);
+  handleHint(document.getElementById("connToHint"), ev.target.value);
+});
+document.getElementById("connCancel").addEventListener("click", () => closeModal("scrimConn"));
+
+document.getElementById("connSubmit").addEventListener("click", async () => {
+  const errId = "connError";
+  document.getElementById(errId).classList.remove("show");
+  const from = normHandle(document.getElementById("connFrom").value);
+  const to = normHandle(document.getElementById("connTo").value);
+  const relation = document.getElementById("connRel").value;
+  if (!validHandle(from)) return showFormError(errId, "Enter your own valid handle.");
+  if (!validHandle(to)) return showFormError(errId, "Enter a valid handle for the person you know.");
+  if (from === to) return showFormError(errId, "Those are the same handle.");
+  if (!document.getElementById("connConsent").checked)
+    return showFormError(errId, "Please confirm the checkbox first.");
+  const btn = document.getElementById("connSubmit");
+  btn.disabled = true;
+  try {
+    await store.addPerson({ handle: from, claimed: true });
+    await store.addPerson({ handle: to, claimed: false });
+    await store.addLink({ a: from, b: to, relation, added_by: from });
+    me = me || from;
+    closeModal("scrimConn");
+    await refresh();
+    selectNode(to);
+    toast("Connection added" + (store.live ? "." : " (demo — resets on reload)."));
+  } catch (e) {
+    showFormError(errId, "Couldn't save — the backend didn't respond. Try again in a moment.");
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* ================= about ================= */
+document.getElementById("btnAbout").addEventListener("click", () => openModal("scrimAbout"));
+document.getElementById("aboutClose").addEventListener("click", () => closeModal("scrimAbout"));
+
+/* ================= theme ================= */
+const themeBtn = document.getElementById("btnTheme");
+const THEME_ORDER = ["auto", "light", "dark"];
+let themeIdx = 0;
+themeBtn.addEventListener("click", () => {
+  themeIdx = (themeIdx + 1) % THEME_ORDER.length;
+  const t = THEME_ORDER[themeIdx];
+  if (t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  themeBtn.title = "Theme: " + t;
+  themeBtn.textContent = t === "auto" ? "◐" : (t === "light" ? "☀" : "☾");
+});
+
+/* ================= mobile: legend toggle + sheet swipe-to-close ================= */
+const legendToggle = document.getElementById("legendToggle");
+legendToggle.addEventListener("click", () => {
+  const legend = document.getElementById("legend");
+  const open = legend.classList.toggle("open");
+  legendToggle.setAttribute("aria-expanded", String(open));
+});
+
+document.getElementById("toggleUnconfirmed").addEventListener("change", (ev) => {
+  showUnconfirmed = ev.target.checked;
+  render();
+  if (sim) sim.alpha(0.5).restart();
+});
+
+const sheetHandle = document.getElementById("sheetHandle");
+let sheetTouchY = null;
+sheetHandle.addEventListener("touchstart", (ev) => {
+  sheetTouchY = ev.touches[0].clientY;
+}, { passive: true });
+sheetHandle.addEventListener("touchmove", (ev) => {
+  if (sheetTouchY !== null && ev.touches[0].clientY - sheetTouchY > 55) {
+    sheetTouchY = null;
+    selectNode(null);
+  }
+}, { passive: true });
+sheetHandle.addEventListener("touchend", () => { sheetTouchY = null; });
+sheetHandle.addEventListener("click", () => selectNode(null));
+
+/* ================= zoom controls ================= */
+document.getElementById("zoomIn").addEventListener("click", () =>
+  svg.transition().duration(250).call(zoom.scaleBy, 1.35));
+document.getElementById("zoomOut").addEventListener("click", () =>
+  svg.transition().duration(250).call(zoom.scaleBy, 1 / 1.35));
+document.getElementById("zoomFit").addEventListener("click", fitView);
+
+function fitView() {
+  if (!nodes.length) return;
+  const xs = nodes.map(n => n.x), ys = nodes.map(n => n.y);
+  const minX = Math.min(...xs) - 60, maxX = Math.max(...xs) + 60;
+  const minY = Math.min(...ys) - 60, maxY = Math.max(...ys) + 60;
+  const k = Math.min(2.5, 0.95 * Math.min(W / (maxX - minX), H / (maxY - minY)));
+  const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+  svg.transition().duration(550).call(
+    zoom.transform,
+    d3.zoomIdentity.translate(W / 2 - k * cx, H / 2 - k * cy).scale(k)
+  );
+}
+
+/* ================= resize ================= */
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    measure();
+    if (sim) {
+      sim.force("x", d3.forceX(W / 2).strength(H > W ? 0.10 : 0.05));
+      sim.force("y", d3.forceY(H / 2).strength(H > W ? 0.035 : 0.06));
+      sim.alpha(0.3).restart();
+    }
+  }, 150);
+});
+
+/* ================= init ================= */
+refresh().then(() => {
+  setTimeout(fitView, 900);
+  setTimeout(fitView, 2200);   // re-fit once the simulation has settled
+}).catch((e) => {
+  console.error(e);
+  toast("Couldn't load the map data — check the backend config.");
+});
+</script>
+</body>
+</html>
