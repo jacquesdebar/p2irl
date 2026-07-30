@@ -44,27 +44,8 @@
     --modal-scrim: rgba(0,0,0,0.55);
   }
 
-  /* ---------- experiments (temporary — pick winners, fold them into :root
-     above, then delete these blocks + the legend selects + their JS) ---------- */
-  :root[data-colorway="sherbet"] {
-    --edge-irl: #ffd60a;      /* yellow */
-    --edge-p2irl: #4dd2ff;    /* sky blue */
-    --edge-p2only: #ff6bcb;   /* pink */
-  }
-  :root[data-colorway="berry"] {
-    --edge-irl: #ff4d6d;
-    --edge-p2irl: #b388ff;
-    --edge-p2only: #a5b8cf;
-  }
-  :root[data-colorway="moss"] {
-    --edge-irl: #bef264;
-    --edge-p2irl: #ffb020;
-    --edge-p2only: #b3ada6;
-  }
-  :root[data-nodecolor="indigo"]  { --node-claimed: #6d8cff; }
-  :root[data-nodecolor="emerald"] { --node-claimed: #2ee6a8; }
-  :root[data-nodecolor="coral"]   { --node-claimed: #ff9d4d; }
-  :root[data-nodecolor="violet"]  { --node-claimed: #b48bff; }
+  /* Experimental colorway/node-color palettes live in the COLORWAYS and
+     NODE_COLORS tables in the script (temporary — see comment there). */
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
@@ -314,11 +295,34 @@
     grid-column: 1 / -1; display: flex; align-items: center; gap: 7px;
     padding-top: 2px; color: var(--ink-2);
   }
-  .legend-colorway select {
-    flex: 1; font-family: inherit; font-size: 11px; color: var(--ink);
+  /* swatch dropdown (color experiments) */
+  .swatch-dd { position: relative; flex: 1; min-width: 0; }
+  .dd-btn {
+    width: 100%; display: flex; align-items: center; gap: 6px;
+    font-family: inherit; font-size: 11px; color: var(--ink);
     background: var(--surface-1); border: 1px solid var(--border);
-    border-radius: 6px; padding: 3px 6px; cursor: pointer;
+    border-radius: 6px; padding: 4px 7px; cursor: pointer;
   }
+  .dd-btn .dd-caret { margin-left: auto; color: var(--muted); font-size: 9px; }
+  .dd-dots { display: inline-flex; gap: 3px; flex: none; }
+  .dd-dots i {
+    width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+  .dd-menu {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 4px; display: none; flex-direction: column; gap: 1px;
+    max-height: 250px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+  .swatch-dd.open .dd-menu { display: flex; }
+  .dd-item {
+    display: flex; align-items: center; gap: 6px; text-align: left;
+    font-family: inherit; font-size: 11px; color: var(--ink-2);
+    background: none; border: none; border-radius: 5px; padding: 4px 6px; cursor: pointer;
+  }
+  .dd-item:hover { background: var(--chip-bg); color: var(--ink); }
+  .dd-item.cur { color: var(--ink); background: var(--chip-bg); }
 
   /* mobile-only elements, hidden on desktop */
   .keytoggle, .fab, .sheet-handle, .legend-stats { display: none; }
@@ -453,23 +457,8 @@
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-oneway"></line></svg>
     <span>dashed until both report it</span>
     <label class="legend-toggle"><input type="checkbox" id="toggleUnconfirmed" checked><span>show unconfirmed connections</span></label>
-    <label class="legend-colorway"><span>colors</span>
-      <select id="colorwaySelect">
-        <option value="classic">classic</option>
-        <option value="sherbet">sherbet</option>
-        <option value="berry">berry</option>
-        <option value="moss">moss</option>
-      </select>
-    </label>
-    <label class="legend-colorway"><span>nodes</span>
-      <select id="nodeColorSelect">
-        <option value="white">white</option>
-        <option value="indigo">indigo</option>
-        <option value="emerald">emerald</option>
-        <option value="coral">coral</option>
-        <option value="violet">violet</option>
-      </select>
-    </label>
+    <div class="legend-colorway" id="colorwayRow"><span>colors</span></div>
+    <div class="legend-colorway" id="nodeColorRow"><span>nodes</span></div>
     <div class="legend-stats" id="legendStats"></div>
   </div>
 
@@ -1372,16 +1361,82 @@ document.getElementById("connSubmit").addEventListener("click", async () => {
 document.getElementById("btnAbout").addEventListener("click", () => openModal("scrimAbout"));
 document.getElementById("aboutClose").addEventListener("click", () => closeModal("scrimAbout"));
 
-/* ================= color experiments (temporary) ================= */
-document.getElementById("colorwaySelect").addEventListener("change", (ev) => {
-  const c = ev.target.value;
-  if (c === "classic") document.documentElement.removeAttribute("data-colorway");
-  else document.documentElement.setAttribute("data-colorway", c);
+/* ================= color experiments (temporary) =================
+   Palettes are [IRL, posting2-then-IRL, posting2-only]. To keep a winner:
+   copy its values into :root, then delete this whole section, the two
+   .legend-colorway rows, and the swatch-dd CSS. */
+const COLORWAYS = {
+  classic: ["#2dd4a0", "#facc15", "#a1a09a"],
+  sherbet: ["#ffd60a", "#4dd2ff", "#ff6bcb"],
+  berry:   ["#ff4d6d", "#b388ff", "#a5b8cf"],
+  moss:    ["#bef264", "#ffb020", "#b3ada6"],
+  thistle: ["#bef264", "#b48bff", "#a3ad93"],
+  miami:   ["#ff3d9a", "#2ee6e6", "#9d8ec7"],
+  citrus:  ["#b4f92c", "#ffa726", "#ff8a80"],
+  ocean:   ["#35f0d0", "#4c8dff", "#8fb3d9"],
+  ember:   ["#ff5a36", "#ffc53d", "#c98d76"],
+  nebula:  ["#e879f9", "#818cf8", "#67e8f9"],
+  arcade:  ["#ff4757", "#2ed573", "#6c7bff"],
+  neon:    ["#39ff14", "#ff10f0", "#00e5ff"],
+  pastel:  ["#ffe08a", "#9ed0ff", "#ffb3d9"],
+};
+const NODE_COLORS = {
+  white:   ["#ffffff"],
+  indigo:  ["#6d8cff"],
+  emerald: ["#2ee6a8"],
+  coral:   ["#ff9d4d"],
+  violet:  ["#b48bff"],
+};
+
+function swatchDropdown(mount, entries, initial, onPick) {
+  const wrap = document.createElement("div");
+  wrap.className = "swatch-dd";
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "dd-btn";
+  btn.setAttribute("aria-haspopup", "listbox");
+  btn.setAttribute("aria-expanded", "false");
+  const menu = document.createElement("div");
+  menu.className = "dd-menu";
+  let current = initial;
+  const dots = colors =>
+    `<span class="dd-dots">${colors.map(c => `<i style="background:${c}"></i>`).join("")}</span>`;
+  function renderBtn() {
+    btn.innerHTML = dots(entries[current]) + `<span>${esc(current)}</span><span class="dd-caret">▾</span>`;
+  }
+  function renderMenu() {
+    menu.innerHTML = "";
+    for (const [name, colors] of Object.entries(entries)) {
+      const it = document.createElement("button");
+      it.type = "button";
+      it.className = "dd-item" + (name === current ? " cur" : "");
+      it.innerHTML = dots(colors) + `<span>${esc(name)}</span>`;
+      it.addEventListener("click", () => { current = name; renderBtn(); close(); onPick(name); });
+      menu.appendChild(it);
+    }
+  }
+  function close() { wrap.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); }
+  btn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    renderMenu();
+    const open = wrap.classList.toggle("open");
+    btn.setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", (ev) => { if (!wrap.contains(ev.target)) close(); });
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") close(); });
+  wrap.appendChild(btn); wrap.appendChild(menu);
+  mount.appendChild(wrap);
+  renderBtn();
+}
+
+swatchDropdown(document.getElementById("colorwayRow"), COLORWAYS, "classic", (name) => {
+  const [irl, p2irl, p2only] = COLORWAYS[name];
+  const s = document.documentElement.style;
+  s.setProperty("--edge-irl", irl);
+  s.setProperty("--edge-p2irl", p2irl);
+  s.setProperty("--edge-p2only", p2only);
 });
-document.getElementById("nodeColorSelect").addEventListener("change", (ev) => {
-  const c = ev.target.value;
-  if (c === "white") document.documentElement.removeAttribute("data-nodecolor");
-  else document.documentElement.setAttribute("data-nodecolor", c);
+swatchDropdown(document.getElementById("nodeColorRow"), NODE_COLORS, "white", (name) => {
+  document.documentElement.style.setProperty("--node-claimed", NODE_COLORS[name][0]);
 });
 
 /* ================= mobile: legend toggle + sheet swipe-to-close ================= */
