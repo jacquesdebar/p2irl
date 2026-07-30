@@ -33,7 +33,7 @@
     --grid: #2c2c2a;
     --baseline: #383835;
     --border: rgba(255,255,255,0.10);
-    --accent: #6d8cff;         /* UI chrome: buttons, focus rings, chips (randomized per device on first visit) */
+    --accent: #4763ff;         /* UI chrome: buttons, focus rings, chips (randomized per device on first visit) */
     --accent-ink: #ffffff;     /* text on accent backgrounds — auto-darkened for bright accents */
     --node-claimed: #ffffff;   /* node dots (overridden by the node-color experiment) */
     --edge-confirmed: #2dd4a0;
@@ -149,6 +149,8 @@
     position: absolute; bottom: 16px; left: 14px; display: flex;
     flex-direction: column; gap: 6px; z-index: 5;
   }
+  @keyframes chaos-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  #btnChaos.spinning { animation: chaos-spin 0.6s ease; }
 
   #tooltip {
     position: fixed; pointer-events: none; z-index: 60;
@@ -493,6 +495,7 @@
     <button class="icon" id="zoomIn" title="Zoom in">+</button>
     <button class="icon" id="zoomOut" title="Zoom out">−</button>
     <button class="icon" id="zoomFit" title="Fit to view">⤢</button>
+    <button class="icon" id="btnChaos" title="chaos">🌀</button>
   </div>
 
   <button class="fab" id="fabAdd">+ add yourself</button>
@@ -1551,7 +1554,6 @@ const NODE_COLORS = {
 /* the accent drives UI chrome AND the "you" node.
    First visit gets a random one (then it's cached in localStorage). */
 const ACCENTS = {
-  indigo:     ["#6d8cff"],
   cobalt:     ["#4763ff"],
   ocean:      ["#3aa5ff"],
   aqua:       ["#22d3ee"],
@@ -1567,7 +1569,7 @@ const ACCENTS = {
   slate:      ["#7d93ad"],
 };
 function applyAccent(name) {
-  const hex = (ACCENTS[name] || ACCENTS.indigo)[0];
+  const hex = (ACCENTS[name] || ACCENTS.cobalt)[0];
   const s = document.documentElement.style;
   s.setProperty("--accent", hex);
   /* bright accents get dark button text, deep ones keep white */
@@ -1695,6 +1697,58 @@ function fitView() {
     d3.zoomIdentity.translate(W / 2 - k * cx, H / 2 - k * cy).scale(k)
   );
 }
+
+/* ================= chaos button =================
+   Each tap picks a random flavor of mayhem; the force sim pulls the
+   web back together afterwards. Pure fun, no data touched. */
+const CHAOS_MODES = [
+  function jiggle() {          // everybody gets a shove
+    for (const n of nodes) {
+      n.vx = (n.vx || 0) + (Math.random() - 0.5) * 110;
+      n.vy = (n.vy || 0) + (Math.random() - 0.5) * 110;
+    }
+    return 0.55;
+  },
+  function vortex() {          // the whole web swirls around its center
+    const cx = d3.mean(nodes, d => d.x), cy = d3.mean(nodes, d => d.y);
+    for (const n of nodes) {
+      const spin = 0.18 + Math.random() * 0.12;
+      n.vx = (n.vx || 0) - (n.y - cy) * spin;
+      n.vy = (n.vy || 0) + (n.x - cx) * spin;
+    }
+    return 0.75;
+  },
+  function scatter() {         // explode, then reform
+    const cx = d3.mean(nodes, d => d.x), cy = d3.mean(nodes, d => d.y);
+    const r = 80 + Math.min(W, H) * 0.5;
+    for (const n of nodes) {
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 40 + Math.random() * r;
+      n.x = cx + Math.cos(ang) * dist;
+      n.y = cy + Math.sin(ang) * dist;
+      n.vx = 0; n.vy = 0;
+    }
+    return 1;
+  },
+  function bodySwap() {        // everyone teleports to someone else's spot
+    const pos = nodes.map(n => ({ x: n.x, y: n.y }));
+    for (let i = pos.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pos[i], pos[j]] = [pos[j], pos[i]];
+    }
+    nodes.forEach((n, i) => { n.x = pos[i].x; n.y = pos[i].y; n.vx = 0; n.vy = 0; });
+    return 0.9;
+  },
+];
+const btnChaos = document.getElementById("btnChaos");
+btnChaos.addEventListener("click", () => {
+  if (!sim || !nodes.length || nodes[0].x === undefined) return;
+  const mode = CHAOS_MODES[Math.floor(Math.random() * CHAOS_MODES.length)];
+  sim.alpha(mode()).restart();
+  btnChaos.classList.remove("spinning");
+  void btnChaos.offsetWidth;   // restart the spin animation
+  btnChaos.classList.add("spinning");
+});
 
 /* ================= resize ================= */
 let resizeTimer = null;
