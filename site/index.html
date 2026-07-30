@@ -78,6 +78,7 @@
     border: 1px solid var(--border); white-space: nowrap;
   }
   .chip.demo { color: var(--ink-2); }
+  #meChip { cursor: pointer; font-family: inherit; color: var(--accent); font-weight: 600; }
   .chip.live { color: var(--edge-confirmed); font-weight: 600; }
   .spacer { flex: 1; }
 
@@ -196,6 +197,18 @@
   .conn-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .conn-dot.confirmed { background: var(--edge-confirmed); }
   .conn-dot.oneway { background: none; border: 1.5px dashed var(--muted); }
+  .conn-row .qadd {
+    flex: none; margin-left: 6px; font-family: inherit; font-size: 11px; font-weight: 600;
+    color: var(--accent); background: var(--chip-bg);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 3px 9px; cursor: pointer; white-space: nowrap;
+  }
+  .conn-row .qadd:hover { border-color: var(--accent); }
+  .conn-row .qadd.added { color: var(--edge-confirmed); }
+  .linklike {
+    font-family: inherit; font-size: inherit; color: var(--accent);
+    background: none; border: none; cursor: pointer; padding: 0;
+  }
   #panel .p-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 10px; }
 
   /* ---------- modals ---------- */
@@ -334,6 +347,7 @@
     .brand .sub { display: none; }
     .stats { display: none; }
     #modeChip { display: none; }
+    #meChip { display: none !important; }
     #btnAddSelf { display: none; }
     .spacer { display: none; }
     .searchwrap { flex: 1 1 0; min-width: 0; }
@@ -427,6 +441,7 @@
   </div>
   <span class="stats" id="stats"></span>
   <span class="chip demo" id="modeChip" title="">demo data</span>
+  <button class="chip" id="meChip" style="display:none" title="tap to switch user"></button>
   <div class="spacer"></div>
   <div class="searchwrap">
     <input id="search" type="text" placeholder="find a handle…" autocomplete="off" spellcheck="false">
@@ -447,12 +462,12 @@
     <svg width="26" height="14"><circle cx="13" cy="7" r="6" class="lg-unclaimed"></circle></svg>
     <span>unconfirmed (added by others)</span>
     <div class="divider"></div>
-    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-irl"></line></svg>
-    <span>IRL</span>
-    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2irl"></line></svg>
-    <span>posting2 then IRL</span>
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2only"></line></svg>
     <span>posting2 only</span>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-p2irl"></line></svg>
+    <span>posting2 then IRL</span>
+    <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-irl"></line></svg>
+    <span>IRL</span>
     <div class="divider"></div>
     <svg width="26" height="14"><line x1="2" y1="7" x2="24" y2="7" class="lg-line lg-oneway"></line></svg>
     <span>dashed until both report it</span>
@@ -482,7 +497,8 @@
     </div>
     <div class="p-actions">
       <button class="btn" id="btnClaim" style="display:none">this is me — claim this node</button>
-      <button class="btn primary" id="btnAddConn">add a connection</button>
+      <button class="btn primary" id="btnQuickKnow" style="display:none"></button>
+      <button class="btn" id="btnAddConn">add a connection</button>
     </div>
   </aside>
 </div>
@@ -495,7 +511,8 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="selfTitle">
     <h2 id="selfTitle">Add yourself to the map</h2>
     <p class="help">Type handles <strong>exactly</strong> as they appear on posting2 — a typo creates a duplicate person. Then pick how you know each person.</p>
-    <div class="field">
+    <p class="help" id="selfAs" style="display:none">adding as <strong id="selfAsHandle"></strong> · <button type="button" class="linklike" id="selfNotYou">not you?</button></p>
+    <div class="field" id="selfHandleField">
       <label for="selfHandle">Your posting2 handle</label>
       <div class="at-field"><span class="at-sign">@</span><input id="selfHandle" type="text" placeholder="yourhandle" spellcheck="false"></div>
       <div class="hint" id="selfHandleHint"></div>
@@ -522,7 +539,8 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="connTitle">
     <h2 id="connTitle">Add a connection</h2>
     <p class="help">You can only add connections that include <strong>you</strong>. It shows as "reported by one" until the other person confirms it from their side.</p>
-    <div class="field">
+    <p class="help" id="connAs" style="display:none">adding as <strong id="connAsHandle"></strong> · <button type="button" class="linklike" id="connNotYou">not you?</button></p>
+    <div class="field" id="connFromField">
       <label for="connFrom">Your handle</label>
       <div class="at-field"><span class="at-sign">@</span><input id="connFrom" type="text" placeholder="yourhandle" spellcheck="false"></div>
       <div class="hint" id="connFromHint"></div>
@@ -548,6 +566,24 @@
   </div>
 </div>
 
+<!-- Who-are-you modal (identity, asked once per device) -->
+<div class="scrim" id="scrimWho">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="whoTitle">
+    <h2 id="whoTitle">Who are you?</h2>
+    <p class="help">Your exact posting2 handle. Asked once — remembered on this device so you never type it again.</p>
+    <div class="field">
+      <label for="whoHandle">Your posting2 handle</label>
+      <div class="at-field"><span class="at-sign">@</span><input id="whoHandle" type="text" placeholder="yourhandle" spellcheck="false"></div>
+      <div class="hint" id="whoHandleHint"></div>
+    </div>
+    <div class="form-error" id="whoError"></div>
+    <div class="m-actions">
+      <button class="btn" id="whoCancel">cancel</button>
+      <button class="btn primary" id="whoSubmit">that's me</button>
+    </div>
+  </div>
+</div>
+
 <!-- About modal -->
 <div class="scrim" id="scrimAbout">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
@@ -556,9 +592,9 @@
       <p><strong>p2irl</strong> is a crowdsourced map of how posting2 users know each other.</p>
       <p><strong>How it works:</strong> add yourself with your exact posting2 handle and list the people you know. Each connection gets a color for how it formed:</p>
       <ul>
-        <li><strong>IRL</strong> — you know each other from real life</li>
-        <li><strong>posting2 then IRL</strong> — met on the app, then in person</li>
         <li><strong>posting2 only</strong> — so far, anyway</li>
+        <li><strong>posting2 then IRL</strong> — met on the app, then in person</li>
+        <li><strong>IRL</strong> — you know each other from real life</li>
       </ul>
       <p>Anyone you mention who hasn't joined yet appears as a dashed <strong>unconfirmed</strong> node until they claim it, and a line stays dashed until <strong>both</strong> people report it.</p>
       <p><strong>Ground rules:</strong> handles only — no real names, no locations, no private info. Only add connections that actually exist, labeled honestly. Exact spelling matters; there's no directory lookup, so typos create duplicates.</p>
@@ -586,11 +622,11 @@ const CONFIG = {
   API_SAME_ORIGIN: false,  // true when the worker serves this page itself
 };
 
-/* Connection provenance — knew-before-posting2 first, posting2-native last */
+/* Connection provenance — least-to-most IRL. First entry is the default. */
 const RELATIONS = [
-  { value: "irl",          label: "IRL",               desc: "know each other from real life" },
-  { value: "posting2-irl", label: "posting2 then IRL", desc: "met on posting2, then met in person" },
-  { value: "posting2",     label: "posting2 only",     desc: "know each other only on posting2 (so far)" },
+  { value: "posting2",     label: "posting2 only",     short: "p2 only", desc: "know each other only on posting2 (so far)" },
+  { value: "posting2-irl", label: "posting2 then IRL", short: "p2→IRL",  desc: "met on posting2, then met in person" },
+  { value: "irl",          label: "IRL",               short: "IRL",     desc: "know each other from real life" },
 ];
 /* retired categories fold into a surviving one — old rows may still exist in the DB */
 const LEGACY_RELATIONS = { "online-first": "posting2" };
@@ -747,10 +783,75 @@ let nodes = [];        // {id, name, claimed, deg, x, y, ...}
 let links = [];        // {source, target, relation, confirmed, reporters:[]}
 let nodeByid = new Map();
 let selected = null;   // handle of selected node
-let me = null;         // handle of the viewer, once they add themselves (in-memory only)
+let me = loadMe();     // handle of the viewer — one user per device, cached in localStorage
 let showUnconfirmed = true;   // legend toggle: include one-sided (dashed) edges
 function visibleLinks() { return showUnconfirmed ? links : links.filter(l => l.confirmed); }
 const posCache = new Map();  // handle -> {x, y} so re-renders don't scatter the graph
+const recentAdds = new Map();  // handle -> relation, for this session's one-tap adds (enables "tap to change")
+
+/* ================= identity — one user per device ================= */
+function loadMe() {
+  try {
+    const h = normHandle(localStorage.getItem("p2irl_me"));
+    return validHandle(h) ? h : null;
+  } catch (e) { return null; }
+}
+function setMe(handle) {
+  if ((handle || null) !== me) recentAdds.clear();  // tags belong to the previous user
+  me = handle || null;
+  try {
+    if (me) localStorage.setItem("p2irl_me", me);
+    else localStorage.removeItem("p2irl_me");
+  } catch (e) {}
+  updateIdentityUI();
+}
+function updateIdentityUI() {
+  const chip = document.getElementById("meChip");
+  chip.style.display = me ? "" : "none";
+  chip.textContent = me ? "you: @" + me : "";
+  document.getElementById("btnAddSelf").textContent = me ? "add people you know" : "add yourself";
+  document.getElementById("fabAdd").textContent = me ? "+ add people" : "+ add yourself";
+}
+/* run fn once we know who the user is — asks at most once per device */
+let afterWho = null;
+function requireMe(fn) {
+  if (me) { fn(); return; }
+  afterWho = fn;
+  document.getElementById("whoHandle").value = "";
+  document.getElementById("whoHandleHint").textContent = "";
+  document.getElementById("whoError").classList.remove("show");
+  openModal("scrimWho");
+  document.getElementById("whoHandle").focus();
+}
+function myLinkWith(handle) {
+  if (!me || handle === me) return null;
+  for (const l of links) {
+    const a = l.source.id || l.source, b = l.target.id || l.target;
+    if ((a === me && b === handle) || (b === me && a === handle)) return l;
+  }
+  return null;
+}
+/* one-tap add: me ↔ other, defaulting to the least-claim relation */
+async function quickAdd(other, relation) {
+  relation = relation || RELATIONS[0].value;
+  if (!me) return;
+  if (other === me) { toast("That's you."); return; }
+  try {
+    await store.addPerson({ handle: me, claimed: true });
+    await store.addPerson({ handle: other, claimed: false });
+    await store.addLink({ a: me, b: other, relation, added_by: me });
+    recentAdds.set(other, relation);
+    await refresh({ reheat: false });
+    toast(`@${other} · ${relInfo(relation).label}` + (store.live ? "" : " (demo)"));
+  } catch (e) {
+    toast("Couldn't save — try again in a moment.");
+  }
+}
+function cycleAdd(handle) {
+  const cur = recentAdds.get(handle) || RELATIONS[0].value;
+  const idx = RELATIONS.findIndex(r => r.value === cur);
+  quickAdd(handle, RELATIONS[(idx + 1) % RELATIONS.length].value);
+}
 
 /* ================= graph build ================= */
 function buildGraph(people, rawLinks) {
@@ -976,8 +1077,10 @@ function applyHighlight() {
   /* selected = bullseye: dark gap ring on the dot + white outer ring on the halo,
      so it reads on any node color (including white) */
   gNodes.selectAll("g.nodeg circle.dot")
-    .attr("stroke", d => d.id === selected ? "var(--page)" : (d.claimed ? "var(--surface-1)" : "var(--muted)"))
-    .attr("stroke-width", d => d.id === selected ? 2.5 : (d.claimed ? 1.5 : 1.8));
+    .attr("stroke", d => d.id === selected ? "var(--page)"
+      : d.id === me ? "var(--accent)"
+      : (d.claimed ? "var(--surface-1)" : "var(--muted)"))
+    .attr("stroke-width", d => d.id === selected ? 2.5 : d.id === me ? 2.5 : (d.claimed ? 1.5 : 1.8));
   gNodes.selectAll("g.nodeg circle.halo")
     .attr("stroke", d => d.id === selected ? "var(--ink)" : "none")
     .attr("stroke-width", d => d.id === selected ? 2 : 0)
@@ -991,7 +1094,7 @@ function applyHighlight() {
   gLabels.selectAll("text.nlabel")
     .attr("display", d => {
       if (selected) return neighbors.has(d.id) ? null : "none";
-      return d.deg >= 3 ? null : "none";
+      return (d.deg >= 3 || d.id === me) ? null : "none";
     })
     .attr("font-weight", d => d.id === selected ? 700 : 400)
     .attr("fill", d => d.id === selected ? "var(--ink)" : "var(--ink-2)");
@@ -1093,18 +1196,74 @@ function showPanel(handle) {
     wrap.appendChild(d);
   }
   for (const { other, l } of others) {
-    const btn = document.createElement("button");
-    btn.className = "conn-row";
-    btn.innerHTML =
+    const row = document.createElement("div");
+    row.className = "conn-row";
+    row.innerHTML =
       `<span class="conn-dot ${l.confirmed ? "confirmed" : "oneway"}" title="${l.confirmed ? "confirmed by both" : "reported by one side"}"></span>` +
       `<span>@${esc(other)}</span><span class="c-rel">${esc(relInfo(l.relation).label)}${l.confirmed ? " ✓" : ""}</span>`;
-    btn.addEventListener("click", () => { selectNode(other); focusNode(other); });
-    wrap.appendChild(btn);
+    row.addEventListener("click", () => { selectNode(other); focusNode(other); });
+    const action = quickActionFor(other);
+    if (action) row.appendChild(action);
+    wrap.appendChild(row);
+  }
+
+  /* contextual one-tap button for the viewed node itself */
+  const q = document.getElementById("btnQuickKnow");
+  const addBtn = document.getElementById("btnAddConn");
+  q.style.display = "none";
+  addBtn.classList.add("primary");
+  if (handle !== me) {
+    const mine = myLinkWith(handle);
+    const mineReported = mine && mine.reporters.includes(me);
+    if (recentAdds.has(handle)) {
+      q.style.display = ""; q.classList.remove("primary");
+      q.textContent = `✓ added — ${relInfo(recentAdds.get(handle)).label} · tap to change`;
+      q.onclick = () => cycleAdd(handle);
+    } else if (!me || !mine) {
+      q.style.display = ""; q.classList.add("primary");
+      addBtn.classList.remove("primary");
+      q.textContent = `+ i know @${n.id}`;
+      q.onclick = () => requireMe(() => quickAdd(n.id));
+    } else if (!mineReported) {
+      q.style.display = ""; q.classList.add("primary");
+      addBtn.classList.remove("primary");
+      q.textContent = `confirm you know @${n.id}`;
+      q.onclick = () => quickAdd(n.id, mine.relation);
+    }
   }
 
   const claimBtn = document.getElementById("btnClaim");
   claimBtn.style.display = n.claimed ? "none" : "";
   document.getElementById("panel").classList.add("open");
+}
+
+/* row-level one-tap action: "+" (new), "confirm" (their side reported), or the
+   tap-to-change tag right after you add someone */
+function quickActionFor(other) {
+  if (other === me) return null;
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "qadd";
+  b.addEventListener("click", (ev) => ev.stopPropagation());
+  if (recentAdds.has(other)) {
+    const r = relInfo(recentAdds.get(other));
+    b.classList.add("added");
+    b.textContent = `✓ ${r.short || r.label} ▾`;
+    b.title = "added — tap to change the connection type";
+    b.addEventListener("click", () => cycleAdd(other));
+    return b;
+  }
+  const mine = myLinkWith(other);
+  if (me && mine && mine.reporters.includes(me)) return null;  // already reported by you
+  if (mine) {
+    b.textContent = "confirm";
+    b.title = `@${other} reported knowing you — confirm it from your side`;
+    b.addEventListener("click", () => quickAdd(other, mine.relation));
+  } else {
+    b.textContent = "+";
+    b.title = `you know @${other} too? one tap adds them as ${RELATIONS[0].label}`;
+    b.addEventListener("click", () => requireMe(() => quickAdd(other)));
+  }
+  return b;
 }
 
 document.getElementById("panelClose").addEventListener("click", () => selectNode(null));
@@ -1176,15 +1335,43 @@ document.addEventListener("click", (ev) => {
 /* ================= modal helpers ================= */
 function openModal(id) { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-for (const id of ["scrimSelf", "scrimConn", "scrimAbout"]) {
+for (const id of ["scrimSelf", "scrimConn", "scrimWho", "scrimAbout"]) {
   document.getElementById(id).addEventListener("click", (ev) => {
     if (ev.target === ev.currentTarget) closeModal(id);
   });
 }
 document.addEventListener("keydown", (ev) => {
   if (ev.key === "Escape") {
-    for (const id of ["scrimSelf", "scrimConn", "scrimAbout"]) closeModal(id);
+    for (const id of ["scrimSelf", "scrimConn", "scrimWho", "scrimAbout"]) closeModal(id);
   }
+});
+
+/* ================= who-are-you modal ================= */
+document.getElementById("whoHandle").addEventListener("input", (ev) => {
+  stripAt(ev.target);
+  handleHint(document.getElementById("whoHandleHint"), ev.target.value, { self: true });
+});
+document.getElementById("whoCancel").addEventListener("click", () => {
+  afterWho = null;
+  closeModal("scrimWho");
+});
+document.getElementById("whoSubmit").addEventListener("click", () => {
+  const h = normHandle(document.getElementById("whoHandle").value);
+  if (!validHandle(h)) return showFormError("whoError", "Enter a valid posting2 handle (letters, numbers, . _ -).");
+  setMe(h);
+  closeModal("scrimWho");
+  render();  // repaint so "you" gets its ring
+  const fn = afterWho; afterWho = null;
+  if (fn) fn();
+});
+document.getElementById("meChip").addEventListener("click", () => {
+  /* switch user: reopen the who-are-you modal prefilled */
+  afterWho = null;
+  document.getElementById("whoHandle").value = me || "";
+  handleHint(document.getElementById("whoHandleHint"), me || "", { self: true });
+  document.getElementById("whoError").classList.remove("show");
+  openModal("scrimWho");
+  document.getElementById("whoHandle").focus();
 });
 
 /* the @ prefix lives in the UI, so typed @s are stripped as you type */
@@ -1237,18 +1424,35 @@ function openSelfModal(prefillHandle) {
   rows.innerHTML = "";
   const initialRows = isMobile() ? 2 : 3;
   for (let i = 0; i < initialRows; i++) rows.appendChild(connRowTemplate());
-  document.getElementById("selfHandle").value = prefillHandle || "";
+  const handle = prefillHandle || me || "";
+  /* identity known (and not claiming someone else) → no handle typing */
+  const identKnown = !!me && (!prefillHandle || prefillHandle === me);
+  document.getElementById("selfHandle").value = handle;
+  document.getElementById("selfHandleField").style.display = identKnown ? "none" : "";
+  document.getElementById("selfAs").style.display = identKnown ? "" : "none";
+  if (identKnown) document.getElementById("selfAsHandle").textContent = "@" + me;
+  document.getElementById("selfTitle").textContent = identKnown ? "Add people you know" : "Add yourself to the map";
   document.getElementById("selfConsent").checked = false;
   document.getElementById("selfError").classList.remove("show");
-  handleHint(document.getElementById("selfHandleHint"), prefillHandle || "", { self: true });
+  handleHint(document.getElementById("selfHandleHint"), handle, { self: true });
   openModal("scrimSelf");
-  if (prefillHandle) {
+  if (handle) {
     const firstRow = document.querySelector("#selfConnRows .ci-handle");
     if (firstRow) firstRow.focus();
   } else {
     document.getElementById("selfHandle").focus();
   }
 }
+document.getElementById("selfNotYou").addEventListener("click", () => {
+  setMe(null);
+  document.getElementById("selfHandleField").style.display = "";
+  document.getElementById("selfAs").style.display = "none";
+  document.getElementById("selfTitle").textContent = "Add yourself to the map";
+  const inp = document.getElementById("selfHandle");
+  inp.value = "";
+  handleHint(document.getElementById("selfHandleHint"), "", { self: true });
+  inp.focus();
+});
 document.getElementById("btnAddSelf").addEventListener("click", () => openSelfModal(me || ""));
 document.getElementById("fabAdd").addEventListener("click", () => openSelfModal(me || ""));
 document.getElementById("selfAddRow").addEventListener("click", () => {
@@ -1295,7 +1499,7 @@ document.getElementById("selfSubmit").addEventListener("click", async () => {
       await store.addPerson({ handle: c.handle, claimed: false });
       await store.addLink({ a: myHandle, b: c.handle, relation: c.relation, added_by: myHandle });
     }
-    me = myHandle;
+    setMe(myHandle);
     closeModal("scrimSelf");
     await refresh();
     selectNode(myHandle); focusNode(myHandle);
@@ -1309,15 +1513,28 @@ document.getElementById("selfSubmit").addEventListener("click", async () => {
 
 /* ================= add-connection modal ================= */
 function openConnModal(from, to) {
-  document.getElementById("connFrom").value = from || "";
+  from = from || me || "";
+  document.getElementById("connFrom").value = from;
+  document.getElementById("connFromField").style.display = me ? "none" : "";
+  document.getElementById("connAs").style.display = me ? "" : "none";
+  if (me) document.getElementById("connAsHandle").textContent = "@" + me;
   document.getElementById("connTo").value = to || "";
   document.getElementById("connConsent").checked = false;
   document.getElementById("connError").classList.remove("show");
-  handleHint(document.getElementById("connFromHint"), from || "");
+  handleHint(document.getElementById("connFromHint"), from);
   handleHint(document.getElementById("connToHint"), to || "");
   openModal("scrimConn");
   document.getElementById(from ? "connTo" : "connFrom").focus();
 }
+document.getElementById("connNotYou").addEventListener("click", () => {
+  setMe(null);
+  document.getElementById("connFromField").style.display = "";
+  document.getElementById("connAs").style.display = "none";
+  const inp = document.getElementById("connFrom");
+  inp.value = "";
+  handleHint(document.getElementById("connFromHint"), "");
+  inp.focus();
+});
 document.getElementById("connFrom").addEventListener("input", (ev) => {
   stripAt(ev.target);
   handleHint(document.getElementById("connFromHint"), ev.target.value);
@@ -1345,7 +1562,7 @@ document.getElementById("connSubmit").addEventListener("click", async () => {
     await store.addPerson({ handle: from, claimed: true });
     await store.addPerson({ handle: to, claimed: false });
     await store.addLink({ a: from, b: to, relation, added_by: from });
-    me = me || from;
+    if (!me) setMe(from);
     closeModal("scrimConn");
     await refresh();
     selectNode(to);
@@ -1502,6 +1719,7 @@ window.addEventListener("resize", () => {
 });
 
 /* ================= init ================= */
+updateIdentityUI();
 refresh().then(() => {
   setTimeout(fitView, 900);
   setTimeout(fitView, 2200);   // re-fit once the simulation has settled

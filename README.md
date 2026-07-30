@@ -10,9 +10,9 @@ Live at **[p2irl.pages.dev](https://p2irl.pages.dev)**.
 People add themselves by their exact posting2 handle and list who they know.
 Every connection is labeled by how it formed:
 
-- **IRL** — know each other from real life
+- **posting2 only** — know each other just on posting2 (so far; the default)
 - **posting2 then IRL** — met on the app, then met in person
-- **posting2 only** — know each other just on posting2 (so far)
+- **IRL** — know each other from real life
 
 (An earlier **online then posting2** category is retired; old rows fold into
 **posting2 only**.)
