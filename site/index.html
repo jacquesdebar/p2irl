@@ -188,23 +188,33 @@
   }
   .conn-row {
     display: flex; align-items: center; gap: 8px;
-    padding: 6px 8px; border-radius: 8px; font-size: 13px;
+    min-height: 36px; padding: 4px 8px; border-radius: 8px; font-size: 13px;
     cursor: pointer; border: none; background: none; text-align: left;
     font-family: inherit; color: var(--ink); width: 100%;
   }
   .conn-row:hover { background: var(--chip-bg); }
-  .conn-row .c-rel { color: var(--muted); font-size: 11px; margin-left: auto; white-space: nowrap; }
+  .conn-row .c-rel {
+    color: var(--muted); font-size: 11px; margin-left: auto; white-space: nowrap;
+    flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  }
   .conn-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
   .conn-dot.confirmed { background: var(--edge-confirmed); }
   .conn-dot.oneway { background: none; border: 1.5px dashed var(--muted); }
-  .conn-row .qadd {
-    flex: none; margin-left: 6px; font-family: inherit; font-size: 11px; font-weight: 600;
+  /* right-hand action slot: fixed slot on every row so heights + relation
+     labels line up whether or not a row has buttons */
+  .conn-act {
+    flex: none; margin-left: 6px; min-width: 30px; display: flex;
+    gap: 4px; align-items: center; justify-content: flex-end;
+  }
+  .qadd {
+    flex: none; font-family: inherit; font-size: 11px; font-weight: 600;
     color: var(--accent); background: var(--chip-bg);
     border: 1px solid var(--border); border-radius: 999px;
-    padding: 3px 9px; cursor: pointer; white-space: nowrap;
+    padding: 2px 8px; cursor: pointer; white-space: nowrap;
   }
-  .conn-row .qadd:hover { border-color: var(--accent); }
-  .conn-row .qadd.added { color: var(--edge-confirmed); }
+  .qadd:hover { border-color: var(--accent); }
+  .qadd.staged { border-style: dashed; }
+  .p-quickrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .linklike {
     font-family: inherit; font-size: inherit; color: var(--accent);
     background: none; border: none; cursor: pointer; padding: 0;
@@ -474,6 +484,7 @@
     <label class="legend-toggle"><input type="checkbox" id="toggleUnconfirmed" checked><span>show unconfirmed connections</span></label>
     <div class="legend-colorway" id="colorwayRow"><span>colors</span></div>
     <div class="legend-colorway" id="nodeColorRow"><span>nodes</span></div>
+    <div class="legend-colorway" id="accentRow"><span>accent</span></div>
     <div class="legend-stats" id="legendStats"></div>
   </div>
 
@@ -489,7 +500,10 @@
     <div class="sheet-handle" id="sheetHandle" aria-hidden="true"></div>
     <button class="icon p-close" id="panelClose" title="Close">×</button>
     <h2 id="pHandle"></h2>
-    <span class="status-chip" id="pStatus"></span>
+    <div class="p-quickrow">
+      <span class="status-chip" id="pStatus"></span>
+      <span id="pQuick"></span>
+    </div>
     <div class="p-meta" id="pMeta"></div>
     <div class="conns">
       <h3>Connections</h3>
@@ -497,8 +511,8 @@
     </div>
     <div class="p-actions">
       <button class="btn" id="btnClaim" style="display:none">this is me — claim this node</button>
-      <button class="btn primary" id="btnQuickKnow" style="display:none"></button>
-      <button class="btn" id="btnAddConn">add a connection</button>
+      <button class="btn primary" id="pSave" style="display:none"></button>
+      <button class="btn" id="pCancel" style="display:none">discard changes</button>
     </div>
   </aside>
 </div>
@@ -530,38 +544,6 @@
     <div class="m-actions">
       <button class="btn" id="selfCancel">cancel</button>
       <button class="btn primary" id="selfSubmit">add me to the map</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add connection modal -->
-<div class="scrim" id="scrimConn">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="connTitle">
-    <h2 id="connTitle">Add a connection</h2>
-    <p class="help">You can only add connections that include <strong>you</strong>. It shows as "reported by one" until the other person confirms it from their side.</p>
-    <p class="help" id="connAs" style="display:none">adding as <strong id="connAsHandle"></strong> · <button type="button" class="linklike" id="connNotYou">not you?</button></p>
-    <div class="field" id="connFromField">
-      <label for="connFrom">Your handle</label>
-      <div class="at-field"><span class="at-sign">@</span><input id="connFrom" type="text" placeholder="yourhandle" spellcheck="false"></div>
-      <div class="hint" id="connFromHint"></div>
-    </div>
-    <div class="field">
-      <label for="connTo">Who you know</label>
-      <div class="at-field"><span class="at-sign">@</span><input id="connTo" type="text" placeholder="theirhandle" spellcheck="false"></div>
-      <div class="hint" id="connToHint"></div>
-    </div>
-    <div class="field">
-      <label for="connRel">How do you know each other?</label>
-      <select id="connRel"></select>
-    </div>
-    <label class="consent">
-      <input type="checkbox" id="connConsent">
-      <span>This connection is real and I'm okay with it being publicly visible.</span>
-    </label>
-    <div class="form-error" id="connError"></div>
-    <div class="m-actions">
-      <button class="btn" id="connCancel">cancel</button>
-      <button class="btn primary" id="connSubmit">add connection</button>
     </div>
   </div>
 </div>
@@ -787,7 +769,7 @@ let me = loadMe();     // handle of the viewer — one user per device, cached i
 let showUnconfirmed = true;   // legend toggle: include one-sided (dashed) edges
 function visibleLinks() { return showUnconfirmed ? links : links.filter(l => l.confirmed); }
 const posCache = new Map();  // handle -> {x, y} so re-renders don't scatter the graph
-const recentAdds = new Map();  // handle -> relation, for this session's one-tap adds (enables "tap to change")
+const pending = new Map();  // other-handle -> relation: staged, unsaved connection adds
 
 /* ================= identity — one user per device ================= */
 function loadMe() {
@@ -797,7 +779,7 @@ function loadMe() {
   } catch (e) { return null; }
 }
 function setMe(handle) {
-  if ((handle || null) !== me) recentAdds.clear();  // tags belong to the previous user
+  if ((handle || null) !== me) pending.clear();  // staged edits belong to the previous user
   me = handle || null;
   try {
     if (me) localStorage.setItem("p2irl_me", me);
@@ -831,26 +813,50 @@ function myLinkWith(handle) {
   }
   return null;
 }
-/* one-tap add: me ↔ other, defaulting to the least-claim relation */
-async function quickAdd(other, relation) {
-  relation = relation || RELATIONS[0].value;
-  if (!me) return;
+/* ---- staged connection edits ----
+   Taps only touch this map (instant, no network, no graph re-render).
+   One "save" click batches every write, then refreshes once. */
+function stageAdd(other, relation) {
   if (other === me) { toast("That's you."); return; }
+  pending.set(other, relation || RELATIONS[0].value);
+  repaintPanel();
+}
+function unstage(other) { pending.delete(other); repaintPanel(); }
+function cycleStaged(other) {
+  const idx = RELATIONS.findIndex(r => r.value === pending.get(other));
+  pending.set(other, RELATIONS[(idx + 1) % RELATIONS.length].value);
+  repaintPanel();
+}
+function repaintPanel() {
+  if (selected && nodeByid.has(selected)) showPanel(selected);
+  else updateSaveBar();
+}
+function updateSaveBar() {
+  const n = pending.size;
+  const save = document.getElementById("pSave");
+  save.style.display = n ? "" : "none";
+  save.textContent = `save ${n} connection${n === 1 ? "" : "s"}`;
+  document.getElementById("pCancel").style.display = n ? "" : "none";
+}
+async function savePending() {
+  if (!me || !pending.size) return;
+  const entries = [...pending.entries()];
+  const save = document.getElementById("pSave");
+  save.disabled = true;
+  save.textContent = "saving…";
   try {
     await store.addPerson({ handle: me, claimed: true });
-    await store.addPerson({ handle: other, claimed: false });
-    await store.addLink({ a: me, b: other, relation, added_by: me });
-    recentAdds.set(other, relation);
+    await Promise.all(entries.map(([h]) => store.addPerson({ handle: h, claimed: false })));
+    await Promise.all(entries.map(([h, rel]) => store.addLink({ a: me, b: h, relation: rel, added_by: me })));
+    pending.clear();
     await refresh({ reheat: false });
-    toast(`@${other} · ${relInfo(relation).label}` + (store.live ? "" : " (demo)"));
+    toast(`${entries.length} connection${entries.length === 1 ? "" : "s"} saved` + (store.live ? "" : " (demo)"));
   } catch (e) {
-    toast("Couldn't save — try again in a moment.");
+    toast("Couldn't save — nothing was lost, try again in a moment.");
+  } finally {
+    save.disabled = false;
+    updateSaveBar();
   }
-}
-function cycleAdd(handle) {
-  const cur = recentAdds.get(handle) || RELATIONS[0].value;
-  const idx = RELATIONS.findIndex(r => r.value === cur);
-  quickAdd(handle, RELATIONS[(idx + 1) % RELATIONS.length].value);
 }
 
 /* ================= graph build ================= */
@@ -1010,7 +1016,7 @@ function render() {
   nodeAll.select("circle.halo").attr("r", d => nodeRadius(d) + 9);
   nodeAll.select("circle.dot")
     .attr("r", d => nodeRadius(d))
-    .attr("fill", d => d.claimed ? "var(--node-claimed)" : "var(--surface-1)")
+    .attr("fill", d => d.id === me ? "var(--accent)" : d.claimed ? "var(--node-claimed)" : "var(--surface-1)")
     .attr("stroke", d => d.claimed ? "var(--surface-1)" : "var(--muted)")
     .attr("stroke-width", d => d.claimed ? 1.5 : 1.8)
     .attr("stroke-dasharray", d => d.claimed ? null : "3 2.5");
@@ -1077,10 +1083,11 @@ function applyHighlight() {
   /* selected = bullseye: dark gap ring on the dot + white outer ring on the halo,
      so it reads on any node color (including white) */
   gNodes.selectAll("g.nodeg circle.dot")
+    .attr("fill", d => d.id === me ? "var(--accent)" : d.claimed ? "var(--node-claimed)" : "var(--surface-1)")
     .attr("stroke", d => d.id === selected ? "var(--page)"
-      : d.id === me ? "var(--accent)"
+      : d.id === me ? "var(--ink)"
       : (d.claimed ? "var(--surface-1)" : "var(--muted)"))
-    .attr("stroke-width", d => d.id === selected ? 2.5 : d.id === me ? 2.5 : (d.claimed ? 1.5 : 1.8));
+    .attr("stroke-width", d => d.id === selected ? 2.5 : d.id === me ? 2 : (d.claimed ? 1.5 : 1.8));
   gNodes.selectAll("g.nodeg circle.halo")
     .attr("stroke", d => d.id === selected ? "var(--ink)" : "none")
     .attr("stroke-width", d => d.id === selected ? 2 : 0)
@@ -1207,71 +1214,58 @@ function showPanel(handle) {
     wrap.appendChild(row);
   }
 
-  /* contextual one-tap button for the viewed node itself */
-  const q = document.getElementById("btnQuickKnow");
-  const addBtn = document.getElementById("btnAddConn");
-  q.style.display = "none";
-  addBtn.classList.add("primary");
-  if (handle !== me) {
-    const mine = myLinkWith(handle);
-    const mineReported = mine && mine.reporters.includes(me);
-    if (recentAdds.has(handle)) {
-      q.style.display = ""; q.classList.remove("primary");
-      q.textContent = `✓ added — ${relInfo(recentAdds.get(handle)).label} · tap to change`;
-      q.onclick = () => cycleAdd(handle);
-    } else if (!me || !mine) {
-      q.style.display = ""; q.classList.add("primary");
-      addBtn.classList.remove("primary");
-      q.textContent = `+ i know @${n.id}`;
-      q.onclick = () => requireMe(() => quickAdd(n.id));
-    } else if (!mineReported) {
-      q.style.display = ""; q.classList.add("primary");
-      addBtn.classList.remove("primary");
-      q.textContent = `confirm you know @${n.id}`;
-      q.onclick = () => quickAdd(n.id, mine.relation);
-    }
-  }
+  /* quick action for the viewed node itself, up by the username */
+  const pq = document.getElementById("pQuick");
+  pq.innerHTML = "";
+  const headAction = quickActionFor(handle, true);
+  if (headAction) pq.appendChild(headAction);
 
   const claimBtn = document.getElementById("btnClaim");
   claimBtn.style.display = n.claimed ? "none" : "";
+  updateSaveBar();
   document.getElementById("panel").classList.add("open");
 }
 
-/* row-level one-tap action: "+" (new), "confirm" (their side reported), or the
-   tap-to-change tag right after you add someone */
-function quickActionFor(other) {
-  if (other === me) return null;
-  const b = document.createElement("button");
-  b.type = "button"; b.className = "qadd";
-  b.addEventListener("click", (ev) => ev.stopPropagation());
-  if (recentAdds.has(other)) {
-    const r = relInfo(recentAdds.get(other));
-    b.classList.add("added");
-    b.textContent = `✓ ${r.short || r.label} ▾`;
-    b.title = "added — tap to change the connection type";
-    b.addEventListener("click", () => cycleAdd(other));
-    return b;
+/* Action cluster for a person, relative to ME: "+" (stage an add), "confirm"
+   (they reported you first), or a staged tag (type ▾ to cycle, × to remove).
+   Staging is local-only — nothing hits the network until "save". */
+function quickActionFor(other, verbose) {
+  const cluster = document.createElement("span");
+  cluster.className = "conn-act";
+  if (me && other === me) return verbose ? null : cluster;  // empty slot keeps rows aligned
+  const mk = (txt, title, fn, cls) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "qadd" + (cls ? " " + cls : "");
+    b.textContent = txt;
+    if (title) b.title = title;
+    b.addEventListener("click", (ev) => { ev.stopPropagation(); fn(); });
+    cluster.appendChild(b);
+  };
+  if (pending.has(other)) {
+    const r = relInfo(pending.get(other));
+    mk(`${r.short || r.label} ▾`, "unsaved — tap to change the connection type", () => cycleStaged(other), "staged");
+    mk("×", "remove this unsaved connection", () => unstage(other), "staged");
+    return cluster;
   }
   const mine = myLinkWith(other);
-  if (me && mine && mine.reporters.includes(me)) return null;  // already reported by you
+  if (me && mine && mine.reporters.includes(me)) return cluster;  // already yours; empty slot keeps rows aligned
   if (mine) {
-    b.textContent = "confirm";
-    b.title = `@${other} reported knowing you — confirm it from your side`;
-    b.addEventListener("click", () => quickAdd(other, mine.relation));
+    mk(verbose ? "confirm you know them" : "confirm",
+      `@${other} reported knowing you — confirm it from your side`,
+      () => requireMe(() => stageAdd(other, mine.relation)));
   } else {
-    b.textContent = "+";
-    b.title = `you know @${other} too? one tap adds them as ${RELATIONS[0].label}`;
-    b.addEventListener("click", () => requireMe(() => quickAdd(other)));
+    mk(verbose ? "+ i know them" : "+",
+      `you know @${other} too? tap to add (${RELATIONS[0].label} by default)`,
+      () => requireMe(() => stageAdd(other)));
   }
-  return b;
+  return cluster;
 }
+document.getElementById("pSave").addEventListener("click", savePending);
+document.getElementById("pCancel").addEventListener("click", () => { pending.clear(); repaintPanel(); });
 
 document.getElementById("panelClose").addEventListener("click", () => selectNode(null));
 document.getElementById("btnClaim").addEventListener("click", () => {
   openSelfModal(selected);
-});
-document.getElementById("btnAddConn").addEventListener("click", () => {
-  openConnModal(me || "", selected || "");
 });
 
 function focusNode(handle, { keepScale = false } = {}) {
@@ -1335,14 +1329,14 @@ document.addEventListener("click", (ev) => {
 /* ================= modal helpers ================= */
 function openModal(id) { document.getElementById(id).classList.add("open"); }
 function closeModal(id) { document.getElementById(id).classList.remove("open"); }
-for (const id of ["scrimSelf", "scrimConn", "scrimWho", "scrimAbout"]) {
+for (const id of ["scrimSelf", "scrimWho", "scrimAbout"]) {
   document.getElementById(id).addEventListener("click", (ev) => {
     if (ev.target === ev.currentTarget) closeModal(id);
   });
 }
 document.addEventListener("keydown", (ev) => {
   if (ev.key === "Escape") {
-    for (const id of ["scrimSelf", "scrimConn", "scrimWho", "scrimAbout"]) closeModal(id);
+    for (const id of ["scrimSelf", "scrimWho", "scrimAbout"]) closeModal(id);
   }
 });
 
@@ -1401,7 +1395,6 @@ function handleHint(el, value, { self = false } = {}) {
 
 /* ================= add-yourself modal ================= */
 const RELATION_OPTS = RELATIONS.map(r => `<option value="${r.value}">${r.label}</option>`).join("");
-document.getElementById("connRel").innerHTML = RELATION_OPTS;
 
 function connRowTemplate() {
   const row = document.createElement("div");
@@ -1511,69 +1504,6 @@ document.getElementById("selfSubmit").addEventListener("click", async () => {
   }
 });
 
-/* ================= add-connection modal ================= */
-function openConnModal(from, to) {
-  from = from || me || "";
-  document.getElementById("connFrom").value = from;
-  document.getElementById("connFromField").style.display = me ? "none" : "";
-  document.getElementById("connAs").style.display = me ? "" : "none";
-  if (me) document.getElementById("connAsHandle").textContent = "@" + me;
-  document.getElementById("connTo").value = to || "";
-  document.getElementById("connConsent").checked = false;
-  document.getElementById("connError").classList.remove("show");
-  handleHint(document.getElementById("connFromHint"), from);
-  handleHint(document.getElementById("connToHint"), to || "");
-  openModal("scrimConn");
-  document.getElementById(from ? "connTo" : "connFrom").focus();
-}
-document.getElementById("connNotYou").addEventListener("click", () => {
-  setMe(null);
-  document.getElementById("connFromField").style.display = "";
-  document.getElementById("connAs").style.display = "none";
-  const inp = document.getElementById("connFrom");
-  inp.value = "";
-  handleHint(document.getElementById("connFromHint"), "");
-  inp.focus();
-});
-document.getElementById("connFrom").addEventListener("input", (ev) => {
-  stripAt(ev.target);
-  handleHint(document.getElementById("connFromHint"), ev.target.value);
-});
-document.getElementById("connTo").addEventListener("input", (ev) => {
-  stripAt(ev.target);
-  handleHint(document.getElementById("connToHint"), ev.target.value);
-});
-document.getElementById("connCancel").addEventListener("click", () => closeModal("scrimConn"));
-
-document.getElementById("connSubmit").addEventListener("click", async () => {
-  const errId = "connError";
-  document.getElementById(errId).classList.remove("show");
-  const from = normHandle(document.getElementById("connFrom").value);
-  const to = normHandle(document.getElementById("connTo").value);
-  const relation = document.getElementById("connRel").value;
-  if (!validHandle(from)) return showFormError(errId, "Enter your own valid handle.");
-  if (!validHandle(to)) return showFormError(errId, "Enter a valid handle for the person you know.");
-  if (from === to) return showFormError(errId, "Those are the same handle.");
-  if (!document.getElementById("connConsent").checked)
-    return showFormError(errId, "Please confirm the checkbox first.");
-  const btn = document.getElementById("connSubmit");
-  btn.disabled = true;
-  try {
-    await store.addPerson({ handle: from, claimed: true });
-    await store.addPerson({ handle: to, claimed: false });
-    await store.addLink({ a: from, b: to, relation, added_by: from });
-    if (!me) setMe(from);
-    closeModal("scrimConn");
-    await refresh();
-    selectNode(to);
-    toast("Connection added" + (store.live ? "." : " (demo — resets on reload)."));
-  } catch (e) {
-    showFormError(errId, "Couldn't save — the backend didn't respond. Try again in a moment.");
-  } finally {
-    btn.disabled = false;
-  }
-});
-
 /* ================= about ================= */
 document.getElementById("btnAbout").addEventListener("click", () => openModal("scrimAbout"));
 document.getElementById("aboutClose").addEventListener("click", () => closeModal("scrimAbout"));
@@ -1603,6 +1533,18 @@ const NODE_COLORS = {
   emerald: ["#2ee6a8"],
   coral:   ["#ff9d4d"],
   violet:  ["#b48bff"],
+};
+/* the accent drives UI chrome AND the "you" node */
+const ACCENTS = {
+  indigo:    ["#6d8cff"],
+  ocean:     ["#3aa5ff"],
+  teal:      ["#14c8b8"],
+  emerald:   ["#10c98d"],
+  violet:    ["#a78bfa"],
+  magenta:   ["#d55dff"],
+  "hot pink": ["#ff5da2"],
+  tangerine: ["#ff8a3d"],
+  crimson:   ["#f43f5e"],
 };
 
 function swatchDropdown(mount, entries, initial, onPick) {
@@ -1654,6 +1596,9 @@ swatchDropdown(document.getElementById("colorwayRow"), COLORWAYS, "classic", (na
 });
 swatchDropdown(document.getElementById("nodeColorRow"), NODE_COLORS, "white", (name) => {
   document.documentElement.style.setProperty("--node-claimed", NODE_COLORS[name][0]);
+});
+swatchDropdown(document.getElementById("accentRow"), ACCENTS, "indigo", (name) => {
+  document.documentElement.style.setProperty("--accent", ACCENTS[name][0]);
 });
 
 /* ================= mobile: legend toggle + sheet swipe-to-close ================= */
