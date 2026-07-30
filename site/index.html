@@ -972,20 +972,7 @@ function nodeRadius(d) {
   return 6 + Math.min(10, d.deg * 1.4);
 }
 
-/* ---------- TEMPORARY JOKE: claimed nodes wear the face ----------
-   Set FACE_NODES to false (or delete this block, the nodeFill() calls,
-   and site/bg.jpg) to restore normal node colors. */
-const FACE_NODES = true;
-svg.append("defs").append("pattern")
-  .attr("id", "p2face")
-  .attr("patternContentUnits", "objectBoundingBox")
-  .attr("width", 1).attr("height", 1)
-  .append("image")
-  .attr("href", "bg.jpg")
-  .attr("width", 1).attr("height", 1)
-  .attr("preserveAspectRatio", "xMidYMid slice");
 function nodeFill(d) {
-  if (FACE_NODES && (d.claimed || d.id === me)) return "url(#p2face)";
   return d.id === me ? "var(--accent)" : d.claimed ? "var(--node-claimed)" : "var(--surface-1)";
 }
 
