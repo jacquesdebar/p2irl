@@ -556,7 +556,7 @@
 <div class="scrim" id="scrimWho">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="whoTitle">
     <h2 id="whoTitle">Who are you?</h2>
-    <p class="help">Your exact posting2 handle. Asked once — remembered on this device so you never type it again.</p>
+    <p class="help" id="whoHelp"></p>
     <div class="field">
       <label for="whoHandle">Your posting2 handle</label>
       <div class="at-field"><span class="at-sign">@</span><input id="whoHandle" type="text" placeholder="yourhandle" spellcheck="false"></div>
@@ -793,21 +793,33 @@ function setMe(handle) {
 }
 function updateIdentityUI() {
   const chip = document.getElementById("meChip");
-  chip.style.display = me ? "" : "none";
-  chip.textContent = me ? "you: @" + me : "";
+  chip.style.display = "";
+  chip.textContent = me ? "you: @" + me : "sign in";
+  chip.title = me ? "tap to switch user" : "say who you are to add your connections";
   document.getElementById("btnAddSelf").textContent = me ? "add people you know" : "add yourself";
   document.getElementById("fabAdd").textContent = me ? "+ add people" : "+ add yourself";
 }
-/* run fn once we know who the user is — asks at most once per device */
-let afterWho = null;
-function requireMe(fn) {
-  if (me) { fn(); return; }
-  afterWho = fn;
-  document.getElementById("whoHandle").value = "";
-  document.getElementById("whoHandleHint").textContent = "";
+/* "just browsing" — visitor skipped the welcome ask; cached so we don't nag */
+function loadBrowse() {
+  try { return localStorage.getItem("p2irl_browse") === "1"; } catch (e) { return false; }
+}
+function setBrowse(on) {
+  try {
+    if (on) localStorage.setItem("p2irl_browse", "1");
+    else localStorage.removeItem("p2irl_browse");
+  } catch (e) {}
+}
+/* the who-are-you modal: welcome ask on first visit, sign-in/switch later */
+function openWhoModal({ welcome = false } = {}) {
+  document.getElementById("whoHelp").textContent = welcome
+    ? "p2irl maps how posting2 users know each other. Tell us your posting2 handle so you can add your people (it's remembered on this device) — or just look around."
+    : "Your exact posting2 handle — remembered on this device so you never type it again.";
+  document.getElementById("whoCancel").textContent = me ? "cancel" : "just browsing";
+  document.getElementById("whoHandle").value = me || "";
+  handleHint(document.getElementById("whoHandleHint"), me || "", { self: true });
   document.getElementById("whoError").classList.remove("show");
   openModal("scrimWho");
-  document.getElementById("whoHandle").focus();
+  if (!isMobile()) document.getElementById("whoHandle").focus();
 }
 function myLinkWith(handle) {
   if (!me || handle === me) return null;
@@ -1236,7 +1248,9 @@ function showPanel(handle) {
 function quickActionFor(other, verbose) {
   const cluster = document.createElement("span");
   cluster.className = "conn-act";
-  if (me && other === me) return verbose ? null : cluster;  // empty slot keeps rows aligned
+  /* browsing without an identity → no add affordances (they'd be meaningless);
+     empty slots keep the rows aligned */
+  if (!me || other === me) return verbose ? null : cluster;
   const mk = (txt, title, fn, cls) => {
     const b = document.createElement("button");
     b.type = "button"; b.className = "qadd" + (cls ? " " + cls : "");
@@ -1252,15 +1266,15 @@ function quickActionFor(other, verbose) {
     return cluster;
   }
   const mine = myLinkWith(other);
-  if (me && mine && mine.reporters.includes(me)) return cluster;  // already yours; empty slot keeps rows aligned
+  if (mine && mine.reporters.includes(me)) return cluster;  // already yours; empty slot keeps rows aligned
   if (mine) {
     mk(verbose ? "confirm you know them" : "confirm",
       `@${other} reported knowing you — confirm it from your side`,
-      () => requireMe(() => stageAdd(other, mine.relation)));
+      () => stageAdd(other, mine.relation));
   } else {
     mk(verbose ? "+ i know them" : "+",
       `you know @${other} too? tap to add (${RELATIONS[0].label} by default)`,
-      () => requireMe(() => stageAdd(other)));
+      () => stageAdd(other));
   }
   return cluster;
 }
@@ -1350,27 +1364,19 @@ document.getElementById("whoHandle").addEventListener("input", (ev) => {
   handleHint(document.getElementById("whoHandleHint"), ev.target.value, { self: true });
 });
 document.getElementById("whoCancel").addEventListener("click", () => {
-  afterWho = null;
+  if (!me) setBrowse(true);   // "just browsing" — don't ask again on future visits
   closeModal("scrimWho");
 });
 document.getElementById("whoSubmit").addEventListener("click", () => {
   const h = normHandle(document.getElementById("whoHandle").value);
   if (!validHandle(h)) return showFormError("whoError", "Enter a valid posting2 handle (letters, numbers, . _ -).");
+  setBrowse(false);
   setMe(h);
   closeModal("scrimWho");
-  render();  // repaint so "you" gets its ring
-  const fn = afterWho; afterWho = null;
-  if (fn) fn();
+  render();        // repaint so "you" gets its ring
+  repaintPanel();  // add affordances appear in an open panel
 });
-document.getElementById("meChip").addEventListener("click", () => {
-  /* switch user: reopen the who-are-you modal prefilled */
-  afterWho = null;
-  document.getElementById("whoHandle").value = me || "";
-  handleHint(document.getElementById("whoHandleHint"), me || "", { self: true });
-  document.getElementById("whoError").classList.remove("show");
-  openModal("scrimWho");
-  document.getElementById("whoHandle").focus();
-});
+document.getElementById("meChip").addEventListener("click", () => openWhoModal());
 
 /* the @ prefix lives in the UI, so typed @s are stripped as you type */
 function stripAt(el) {
@@ -1766,6 +1772,7 @@ window.addEventListener("resize", () => {
 
 /* ================= init ================= */
 updateIdentityUI();
+if (!me && !loadBrowse()) openWhoModal({ welcome: true });
 refresh().then(() => {
   setTimeout(fitView, 900);
   setTimeout(fitView, 2200);   // re-fit once the simulation has settled
