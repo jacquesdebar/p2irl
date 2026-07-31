@@ -285,6 +285,21 @@
     color: var(--muted); pointer-events: none; font-size: 13.5px; line-height: 1;
   }
   .at-field > input { padding-left: 26px; width: 100%; }
+  /* typeahead from people already on the map */
+  .suggest {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 30;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 4px; display: none; flex-direction: column; gap: 1px;
+    max-height: 180px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+  .suggest.open { display: flex; }
+  .suggest button {
+    display: flex; justify-content: space-between; gap: 8px; align-items: center;
+    font-family: inherit; font-size: 12.5px; color: var(--ink); text-align: left;
+    background: none; border: none; border-radius: 5px; padding: 6px 8px; cursor: pointer;
+  }
+  .suggest button:hover { background: var(--chip-bg); }
+  .suggest .s-deg { color: var(--muted); font-size: 10.5px; flex: none; }
   .addrow {
     align-self: flex-start; font-family: inherit; font-size: 12.5px; font-weight: 600;
     color: var(--accent); background: none; border: none; cursor: pointer; padding: 2px 0;
@@ -843,14 +858,31 @@ function myLinkWith(handle) {
   }
   return null;
 }
+/* claims you've dismissed ("don't actually know them") — device-local only,
+   per identity; the other side's report stays in the data as a one-sided dash */
+function dismissedSet() {
+  try {
+    const all = JSON.parse(localStorage.getItem("p2irl_dismissed") || "{}");
+    return new Set(all[me] || []);
+  } catch (e) { return new Set(); }
+}
+function addDismissed(other) {
+  try {
+    const all = JSON.parse(localStorage.getItem("p2irl_dismissed") || "{}");
+    if (!(all[me] || []).includes(other)) (all[me] = all[me] || []).push(other);
+    localStorage.setItem("p2irl_dismissed", JSON.stringify(all));
+  } catch (e) {}
+}
 /* links that touch me which I haven't reported yet — i.e. awaiting my confirmation */
 function pendingConfirms() {
   if (!me) return [];
+  const dism = dismissedSet();
   const out = [];
   for (const l of links) {
     const a = l.source.id || l.source, b = l.target.id || l.target;
-    if ((a === me || b === me) && !l.reporters.includes(me))
-      out.push({ other: a === me ? b : a, l });
+    const other = a === me ? b : a;
+    if ((a === me || b === me) && !l.reporters.includes(me) && !dism.has(other))
+      out.push({ other, l });
   }
   return out;
 }
@@ -881,6 +913,7 @@ function cycleStaged(other) {
 function repaintPanel() {
   if (selected && nodeByid.has(selected)) showPanel(selected);
   else updateSaveBar();
+  updateIdentityUI();  // keep the "N to confirm" badge current
 }
 function updateSaveBar() {
   const n = pending.size;
@@ -1229,9 +1262,29 @@ function selectNode(handle) {
   if (handle) showPanel(handle);
   else document.getElementById("panel").classList.remove("open");
   applyHighlight();
+  /* keep the URL shareable: #@handle deep-links to this node */
+  if (handle) history.replaceState(null, "", "#@" + handle);
+  else if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   // on phones the bottom sheet covers the lower half — keep the node in view
   if (handle && isMobile()) focusNode(handle, { keepScale: true });
 }
+
+/* ================= hash deep links (#@handle) ================= */
+function handleFromHash() {
+  const m = location.hash.match(/^#@?([a-zA-Z0-9._-]{2,32})$/);
+  return m ? normHandle(m[1]) : null;
+}
+function applyHash({ toastMissing = false } = {}) {
+  const h = handleFromHash();
+  if (!h) return;
+  if (nodeByid.has(h)) {
+    if (selected !== h) { selectNode(h); }
+    focusNode(h);
+  } else if (toastMissing) {
+    toast(`@${h} isn't on the map (yet)`);
+  }
+}
+window.addEventListener("hashchange", () => applyHash({ toastMissing: true }));
 
 function showPanel(handle) {
   const n = nodeByid.get(handle);
@@ -1268,12 +1321,14 @@ function showPanel(handle) {
     const action = quickActionFor(other);
     if (action) row.appendChild(action);
     wrap.appendChild(row);
+    return row;
   };
 
   /* on your own panel, connections awaiting your confirmation get their own
      section at the top, with a one-tap "confirm all" */
+  const dism = handle === me ? dismissedSet() : null;
   const awaiting = handle === me
-    ? others.filter(({ l }) => !l.reporters.includes(me))
+    ? others.filter(({ other, l }) => !l.reporters.includes(me) && !dism.has(other))
     : [];
   const rest = handle === me ? others.filter(o => !awaiting.includes(o)) : others;
   if (awaiting.length) {
@@ -1290,7 +1345,24 @@ function showPanel(handle) {
     });
     head.appendChild(all);
     wrap.appendChild(head);
-    for (const o of awaiting) makeRow(o);
+    for (const o of awaiting) {
+      const row = makeRow(o);
+      /* "don't actually know them" — hides the request on this device only */
+      if (!pending.has(o.other)) {
+        const x = document.createElement("button");
+        x.type = "button"; x.className = "qadd";
+        x.textContent = "×";
+        x.title = "don't know them? hide this request (this device only — their report stays as a dashed line)";
+        x.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          addDismissed(o.other);
+          repaintPanel();
+          toast(`hidden — @${o.other}'s report stays as a one-sided dash`);
+        });
+        const act = row.querySelector(".conn-act");
+        if (act) act.appendChild(x);
+      }
+    }
     if (rest.length) {
       const div = document.createElement("div");
       div.style.cssText = "border-top:1px solid var(--border);margin:6px 0 4px";
@@ -1432,6 +1504,7 @@ document.getElementById("whoHandle").addEventListener("input", (ev) => {
   stripAt(ev.target);
   handleHint(document.getElementById("whoHandleHint"), ev.target.value, { self: true });
 });
+attachSuggest(document.getElementById("whoHandle"));
 document.getElementById("whoCancel").addEventListener("click", () => {
   if (!me) setBrowse(true);   // "just browsing" — don't ask again on future visits
   closeModal("scrimWho");
@@ -1451,6 +1524,46 @@ document.getElementById("meChip").addEventListener("click", () => openWhoModal()
 /* the @ prefix lives in the UI, so typed @s are stripped as you type */
 function stripAt(el) {
   if (el.value.startsWith("@")) el.value = el.value.replace(/^@+/, "");
+}
+
+/* ================= handle typeahead =================
+   Suggests handles already on the map (the graph data is client-side, so this
+   costs nothing) — spares people from typo-ing long handles into duplicates. */
+function attachSuggest(input) {
+  const field = input.closest(".at-field");
+  if (!field) return;
+  const box = document.createElement("div");
+  box.className = "suggest";
+  field.appendChild(box);
+  const close = () => { box.classList.remove("open"); box.innerHTML = ""; };
+  const update = () => {
+    const q = normHandle(input.value);
+    if (!q || nodeByid.has(q)) { close(); return; }  // empty or already exact — no need
+    const matches = nodes
+      .filter(n => n.id.includes(q))
+      .sort((a, b) => (b.id.startsWith(q) - a.id.startsWith(q)) || (b.deg - a.deg) || a.id.localeCompare(b.id))
+      .slice(0, 6);
+    if (!matches.length) { close(); return; }
+    box.innerHTML = "";
+    for (const m of matches) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = `<span>@${esc(m.id)}</span><span class="s-deg">${m.deg} connection${m.deg === 1 ? "" : "s"}</span>`;
+      /* pointerdown beats the input's blur, so taps land */
+      b.addEventListener("pointerdown", (ev) => {
+        ev.preventDefault();
+        input.value = m.id;
+        input.dispatchEvent(new Event("input", { bubbles: true }));  // refresh hints
+        close();
+      });
+      box.appendChild(b);
+    }
+    box.classList.add("open");
+  };
+  input.addEventListener("input", update);
+  input.addEventListener("focus", update);
+  input.addEventListener("blur", () => setTimeout(close, 150));
+  input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") close(); });
 }
 
 function handleHint(el, value, { self = false } = {}) {
@@ -1489,6 +1602,7 @@ function connRowTemplate() {
     stripAt(ev.target);
     handleHint(row.querySelector(".rowhint"), ev.target.value);
   });
+  attachSuggest(row.querySelector(".ci-handle"));
   return row;
 }
 
@@ -1535,6 +1649,7 @@ document.getElementById("selfHandle").addEventListener("input", (ev) => {
   stripAt(ev.target);
   handleHint(document.getElementById("selfHandleHint"), ev.target.value, { self: true });
 });
+attachSuggest(document.getElementById("selfHandle"));
 document.getElementById("selfCancel").addEventListener("click", () => closeModal("scrimSelf"));
 
 function showFormError(id, msg) {
@@ -1857,8 +1972,14 @@ window.addEventListener("resize", () => {
 updateIdentityUI();
 if (!me && !loadBrowse()) openWhoModal({ welcome: true });
 refresh().then(() => {
-  setTimeout(fitView, 900);
-  setTimeout(fitView, 2200);   // re-fit once the simulation has settled
+  if (handleFromHash()) {
+    // arrived via a shared #@handle link — focus that node instead of fitting
+    setTimeout(() => applyHash({ toastMissing: true }), 700);
+    setTimeout(() => applyHash(), 2200);   // re-center once the sim settles
+  } else {
+    setTimeout(fitView, 900);
+    setTimeout(fitView, 2200);   // re-fit once the simulation has settled
+  }
 }).catch((e) => {
   console.error(e);
   toast("Couldn't load the map data — check the backend config.");
