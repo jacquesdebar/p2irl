@@ -218,6 +218,7 @@
   }
   .qadd:hover { border-color: var(--accent); }
   .qadd.staged { border-style: dashed; }
+  .qadd.edit { color: var(--ink-2); background: none; }
   .p-quickrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .p-pendinghead {
     display: flex; justify-content: space-between; align-items: center; gap: 8px;
@@ -227,7 +228,16 @@
     font-family: inherit; font-size: inherit; color: var(--accent);
     background: none; border: none; cursor: pointer; padding: 0;
   }
-  #panel .p-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 10px; }
+  /* sticky: stays in view while the connection list scrolls, so staged
+     changes can't hide the save button below the fold */
+  #panel .p-actions {
+    display: flex; flex-direction: column; gap: 8px; margin-top: auto;
+    position: sticky; bottom: -1px; z-index: 2; padding-top: 10px;
+  }
+  #panel .p-actions.has-actions {
+    background: var(--page);
+    box-shadow: 0 -12px 14px -8px rgba(0,0,0,0.55);
+  }
 
   /* ---------- modals ---------- */
   .scrim {
@@ -814,7 +824,7 @@ function loadMe() {
   } catch (e) { return null; }
 }
 function setMe(handle) {
-  if ((handle || null) !== me) pending.clear();  // staged edits belong to the previous user
+  if ((handle || null) !== me) { pending.clear(); pendingBase.clear(); }  // staged edits belong to the previous user
   me = handle || null;
   try {
     if (me) localStorage.setItem("p2irl_me", me);
@@ -905,15 +915,22 @@ function nudgePendingConfirms() {
 /* ---- staged connection edits ----
    Taps only touch this map (instant, no network, no graph re-render).
    One "save" click batches every write, then refreshes once. */
+const pendingBase = new Map();  // other -> the relation I already reported (an edit), or null (a new add)
 function stageAdd(other, relation) {
   if (other === me) { toast("That's you."); return; }
+  if (!pendingBase.has(other)) {
+    const mine = myLinkWith(other);
+    pendingBase.set(other, mine && mine.reporters.includes(me) ? mine.relation : null);
+  }
   pending.set(other, relation || RELATIONS[0].value);
   repaintPanel();
 }
-function unstage(other) { pending.delete(other); repaintPanel(); }
+function unstage(other) { pending.delete(other); pendingBase.delete(other); repaintPanel(); }
 function cycleStaged(other) {
   const idx = RELATIONS.findIndex(r => r.value === pending.get(other));
-  pending.set(other, RELATIONS[(idx + 1) % RELATIONS.length].value);
+  const next = RELATIONS[(idx + 1) % RELATIONS.length].value;
+  if (pendingBase.get(other) === next) { unstage(other); return; }  // cycled back to what it already is — no change
+  pending.set(other, next);
   repaintPanel();
 }
 function repaintPanel() {
@@ -927,18 +944,32 @@ function updateSaveBar() {
   save.style.display = n ? "" : "none";
   save.textContent = `save ${n} connection${n === 1 ? "" : "s"}`;
   document.getElementById("pCancel").style.display = n ? "" : "none";
+  /* the sticky bar only gets its backdrop when something is actually in it */
+  const claimVisible = document.getElementById("btnClaim").style.display !== "none";
+  document.querySelector("#panel .p-actions").classList.toggle("has-actions", n > 0 || claimVisible);
 }
 async function savePending() {
   if (!me || !pending.size) return;
-  const entries = [...pending.entries()];
+  /* an edit to a CONFIRMED connection updates both reports, so the pair's
+     type actually changes rather than going half-and-half; one-sided
+     reports only ever touch your own row */
+  const entries = [...pending.entries()].map(([h, rel]) => {
+    const l = myLinkWith(h);
+    return { h, rel, mutual: !!(l && l.confirmed && l.reporters.includes(me)) };
+  });
   const save = document.getElementById("pSave");
   save.disabled = true;
   save.textContent = "saving…";
   try {
     await store.addPerson({ handle: me, claimed: true });
-    await Promise.all(entries.map(([h]) => store.addPerson({ handle: h, claimed: false })));
-    await Promise.all(entries.map(([h, rel]) => store.addLink({ a: me, b: h, relation: rel, added_by: me })));
+    await Promise.all(entries.map(({ h }) => store.addPerson({ handle: h, claimed: false })));
+    await Promise.all(entries.flatMap(({ h, rel, mutual }) => {
+      const posts = [store.addLink({ a: me, b: h, relation: rel, added_by: me })];
+      if (mutual) posts.push(store.addLink({ a: me, b: h, relation: rel, added_by: h }));
+      return posts;
+    }));
     pending.clear();
+    pendingBase.clear();
     await refresh({ reheat: false });
     toast(`${entries.length} connection${entries.length === 1 ? "" : "s"} saved` + (store.live ? "" : " (demo)"));
   } catch (e) {
@@ -1333,7 +1364,7 @@ function showPanel(handle) {
       `<span class="conn-dot ${l.confirmed ? "confirmed" : "oneway"}" title="${l.confirmed ? "confirmed by both" : "reported by one side"}"></span>` +
       `<span>@${esc(other)}</span><span class="c-rel">${esc(relInfo(l.relation).label)}${l.confirmed ? " ✓" : ""}</span>`;
     row.addEventListener("click", () => { selectNode(other); focusNode(other); });
-    const action = quickActionFor(other);
+    const action = quickActionFor(other, { editable: handle === me });
     if (action) row.appendChild(action);
     wrap.appendChild(row);
     return row;
@@ -1389,7 +1420,7 @@ function showPanel(handle) {
   /* quick action for the viewed node itself, up by the username */
   const pq = document.getElementById("pQuick");
   pq.innerHTML = "";
-  const headAction = quickActionFor(handle, true);
+  const headAction = quickActionFor(handle, { verbose: true, editable: true });
   if (headAction) pq.appendChild(headAction);
 
   const claimBtn = document.getElementById("btnClaim");
@@ -1401,7 +1432,8 @@ function showPanel(handle) {
 /* Action cluster for a person, relative to ME: "+" (stage an add), "confirm"
    (they reported you first), or a staged tag (type ▾ to cycle, × to remove).
    Staging is local-only — nothing hits the network until "save". */
-function quickActionFor(other, verbose) {
+function quickActionFor(other, opts) {
+  const { verbose = false, editable = false } = opts || {};
   const cluster = document.createElement("span");
   cluster.className = "conn-act";
   /* browsing without an identity → no add affordances (they'd be meaningless);
@@ -1422,7 +1454,19 @@ function quickActionFor(other, verbose) {
     return cluster;
   }
   const mine = myLinkWith(other);
-  if (mine && mine.reporters.includes(me)) return cluster;  // already yours; empty slot keeps rows aligned
+  if (mine && mine.reporters.includes(me)) {
+    if (!editable) return cluster;  // empty slot keeps rows aligned
+    /* you already reported this one — tap to cycle the type (stages an edit) */
+    const r = relInfo(mine.relation);
+    mk(`${r.short || r.label} ▾`,
+      `you reported "${r.label}" — tap to change the connection type` +
+      (mine.confirmed ? " (confirmed by both, so saving updates both sides)" : ""),
+      () => {
+        const idx = RELATIONS.findIndex(x => x.value === mine.relation);
+        stageAdd(other, RELATIONS[(idx + 1) % RELATIONS.length].value);
+      }, "edit");
+    return cluster;
+  }
   if (mine) {
     mk(verbose ? "confirm you know them" : "confirm",
       `@${other} reported knowing you — confirm it from your side`,
@@ -1435,7 +1479,7 @@ function quickActionFor(other, verbose) {
   return cluster;
 }
 document.getElementById("pSave").addEventListener("click", savePending);
-document.getElementById("pCancel").addEventListener("click", () => { pending.clear(); repaintPanel(); });
+document.getElementById("pCancel").addEventListener("click", () => { pending.clear(); pendingBase.clear(); repaintPanel(); });
 
 document.getElementById("panelClose").addEventListener("click", () => selectNode(null));
 document.getElementById("btnClaim").addEventListener("click", () => {
