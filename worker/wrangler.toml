@@ -3,11 +3,12 @@ main = "worker.js"
 compatibility_date = "2026-07-01"
 account_id = "dedb2334bceca05c17667f401a53e26d"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "p2irl"
-database_id = "97eb1b07-c072-4b4a-b267-a011daab018c"
-
-# The admin token is a secret, never committed:
-#   wrangler secret put ADMIN_TOKEN
-# (or dashboard: worker -> Settings -> Variables & Secrets)
+# Retired 2026-08-04. The D1 binding is intentionally removed so the worker
+# has no path to the database at all. The database itself still exists and is
+# untouched; reach it directly if needed:
+#   wrangler d1 execute p2irl --remote --command "SELECT COUNT(*) FROM people"
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "p2irl"
+# database_id = "97eb1b07-c072-4b4a-b267-a011daab018c"

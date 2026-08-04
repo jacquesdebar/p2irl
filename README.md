@@ -1,9 +1,14 @@
 # p2irl
 
+> **Retired 2026-08-04.** The site and its API have been taken down. `site/`
+> now serves a static notice and the worker returns `410 Gone` on every route;
+> the worker no longer has a D1 binding. Everything below this line describes
+> how the project worked while it was live, and is kept as documentation only.
+
 **who do u know here** — a crowdsourced map of how posting2 users know each
 other, IRL and online.
 
-Live at **[p2irl.pages.dev](https://p2irl.pages.dev)**.
+Formerly live at p2irl.pages.dev.
 
 ## How it works
 

@@ -1,0 +1,4 @@
+# Local-only working files — never committed, never deployed.
+private/
+_to_delete/
+.DS_Store
